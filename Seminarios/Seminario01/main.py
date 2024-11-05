@@ -148,7 +148,7 @@ def cancelarPedido():
     mostrarContenidoTablas()
 
 def finalizarPedido():
-    global cursor, subwindow
+    global cursor, subwindow, window
 
     cursor.execute("commit")
 
@@ -157,6 +157,7 @@ def finalizarPedido():
 
     # Destruimos la subventana
     subwindow.destroy()
+    window.deiconify()
 
 def altaPedido():
     global cursor, window, subwindow, contador_pedidos
@@ -164,10 +165,10 @@ def altaPedido():
     # TODO: Cambiar para usar Frames
     subwindow = tk.Toplevel()
     subwindow.title("Dar de Alta Pedido")
-    subwindow.geometry("800x800")
-    subwindow.configure(background="white")
+    subwindow.geometry("700x600")
+    subwindow.configure(background="#E1FBFF")
 
-    tk.Label(subwindow, text="Dar de Alta Pedido", bg="#00A8E8", fg="black", font=("Arial", 16)).pack()
+    tk.Label(subwindow, text="Dar de Alta Pedido", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16)).pack()
 
     # Introducir código de cliente
     cliente = tk.StringVar(subwindow)
@@ -175,11 +176,13 @@ def altaPedido():
     tk.Entry(subwindow, justify="center", textvariable=cliente).pack()
 
     # Botones del menú
-    tk.Button(subwindow, text="Añadir cliente", bg="#00A8E8", fg="black", width=10, command=lambda:crearPedido(cliente)).pack()
-    tk.Button(subwindow, text="Añadir detalle de producto", bg="#00A8E8", fg="black", width=40, command=detallePedido).pack()
-    tk.Button(subwindow, text="Eliminar todos los detalles de producto", bg="#00A8E8", fg="black",width=40, command=eliminarDetallePedido).pack()
-    tk.Button(subwindow, text="Cancelar Pedido", bg="#00A8E8", fg="black", width=40, command=cancelarPedido).pack()
-    tk.Button(subwindow, text="Finalizar Pedido", bg="#00A8E8", fg="black", width=40, command=finalizarPedido).pack()
+    tk.Button(subwindow, text="Añadir cliente", bg="#27ADC1", fg="#E1FBFF", width=10, command=lambda:crearPedido(cliente)).pack()
+    tk.Button(subwindow, text="Añadir detalle de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=detallePedido).pack()
+    tk.Button(subwindow, text="Eliminar todos los detalles de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=eliminarDetallePedido).pack()
+    tk.Button(subwindow, text="Cancelar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=cancelarPedido).pack()
+    tk.Button(subwindow, text="Finalizar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=finalizarPedido).pack()
+
+    window.withdraw()
     
 
 def salir():
@@ -198,18 +201,22 @@ def main():
     # Configuración de la ventana principal
     window = tk.Tk()
     window.title("Menú Principal")
-    window.geometry("800x800")
-    window.configure(background="white")
+    window.geometry("700x600")
+    window.configure(background="#E1FBFF")
 
     # Etiqueta de título
-    titulo = tk.Label(window, text="Menú Principal", bg="#00A8E8", fg="black", font=("Arial", 16))
+    titulo = tk.Label(window, text="Menú Principal", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16))
     titulo.pack()
 
+    #Imagen
+    imagen = tk.PhotoImage(file="carro.png")
+    lbl = tk.Label(window, image=imagen).pack()
+
     # Botones del menú
-    tk.Button(window, text="Crear Stock", bg="#00A8E8", fg="black", width=40, command=crearStock).pack()
-    tk.Button(window, text="Dar de Alta Pedido", bg="#00A8E8", fg="black", width=40, command=altaPedido).pack()
-    tk.Button(window, text="Mostrar Contenido Tablas", bg="#00A8E8", fg="black", width=40, command=mostrarContenidoTablas).pack()
-    tk.Button(window, text="Salir", bg="#00A8E8", fg="black", width=40, command=salir).pack()
+    tk.Button(window, text="Crear Stock", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=crearStock).pack()
+    tk.Button(window, text="Dar de Alta Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=altaPedido).pack()
+    tk.Button(window, text="Mostrar Contenido Tablas", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=mostrarContenidoTablas).pack()
+    tk.Button(window, text="Salir", bg="#27ADC1", fg="#E1FBFF", width=30, height=3,command=salir).pack()
 
     # Ejecutar la ventana
     window.mainloop()
