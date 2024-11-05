@@ -157,6 +157,8 @@ def finalizarPedido():
 
     # Destruimos la subventana
     subwindow.destroy()
+
+    # Remostramos la ventana
     window.deiconify()
 
 def altaPedido():
@@ -182,6 +184,7 @@ def altaPedido():
     tk.Button(subwindow, text="Cancelar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=cancelarPedido).pack()
     tk.Button(subwindow, text="Finalizar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=finalizarPedido).pack()
 
+    # Ocultamos la ventana
     window.withdraw()
     
 
@@ -208,7 +211,7 @@ def main():
     titulo = tk.Label(window, text="Menú Principal", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16))
     titulo.pack()
 
-    #Imagen
+    # Imagen
     imagen = tk.PhotoImage(file="carro.png")
     lbl = tk.Label(window, image=imagen).pack()
 
