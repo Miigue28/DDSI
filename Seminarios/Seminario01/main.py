@@ -7,13 +7,14 @@ cursor = None
 connection = None
 window = None
 subwindow = None
+clienteWindow = None
 contador_pedidos :int = 0
 table_name = list({"DETALLEPEDIDO", "STOCK", "PEDIDO"})
 
 def db_connect():
     global connection, cursor
     try:
-        cp = oracledb.ConnectParams(user="x0070272", password="x0070272", host="oracle0.ugr.es", port=1521, service_name="practbd")
+        cp = oracledb.ConnectParams(user="x6257747", password="x6257747", host="oracle0.ugr.es", port=1521, service_name="practbd")
         connection = oracledb.connect(params=cp)
         cursor = connection.cursor()
     except Exception as e:
@@ -90,7 +91,7 @@ def recogerDatos(producto, cantidad):
     global cursor
 
     # Savepoint previo a crear DetallePedido
-    cursor.execute("savepoint DetallePedido")
+    #cursor.execute("savepoint DetallePedido")
     
     # Verificar si el código de producto existe
     cursor.execute(f"select count(cProducto) from STOCK where cProducto='{int(producto.get())}'")
@@ -103,6 +104,8 @@ def recogerDatos(producto, cantidad):
     if int(cursor.fetchone()[0]) >= int(cantidad.get()):
         cursor.execute(f"insert into DETALLEPEDIDO values({contador_pedidos}, {int(producto.get())}, {int(cantidad.get())})")
         cursor.execute(f"update STOCK set Cantidad = Cantidad - {int(cantidad.get())} where cProducto = {int(producto.get())}")
+        # Mostramos el contenido de la base de datos
+        mostrarContenidoTablas()
     else:
         # Messagebox
         print("\n\n[!] Error: Cantidad de producto insuficiente\n") # Se podría gestionar algo mejor esto
@@ -111,18 +114,23 @@ def recogerDatos(producto, cantidad):
 def detallePedido():
     global subwindow, contador_pedidos
 
-    # Recogemos la información del pedido
-    producto = tk.StringVar(subwindow)
-    tk.Label(subwindow, text="Código Producto", justify="center").pack()
-    tk.Entry(subwindow, justify="center", textvariable=producto).pack()
+    detallePedidoWindow = tk.Toplevel()
+    detallePedidoWindow.title("Detalle Pedido")
+    detallePedidoWindow.geometry("600x600")
+    detallePedidoWindow.configure(background="#E1FBFF")
 
-    cantidad = tk.StringVar(subwindow)
-    tk.Label(subwindow, text="Cantidad", justify="center").pack()
-    tk.Entry(subwindow, justify="center", textvariable=cantidad).pack()
-    tk.Button(subwindow, text="Añadir Datos", bg="#00A8E8", fg="black", width=10, command=lambda:recogerDatos(producto, cantidad)).pack()
+    # Recogemos la información del pedido
+    producto = tk.StringVar(detallePedidoWindow)
+    tk.Label(detallePedidoWindow, text="Código Producto", justify="center").pack()
+    tk.Entry(detallePedidoWindow, justify="center", textvariable=producto).pack()
+
+    cantidad = tk.StringVar(detallePedidoWindow)
+    tk.Label(detallePedidoWindow, text="Cantidad", justify="center").pack()
+    tk.Entry(detallePedidoWindow, justify="center", textvariable=cantidad).pack()
+    tk.Button(detallePedidoWindow, text="Añadir Datos", bg="#00A8E8", fg="black", width=10, command=lambda:recogerDatos(producto, cantidad)).pack()
+    tk.Button(detallePedidoWindow, text="Cerrar", bg="#00A8E8", fg="black", width=10, command=detallePedidoWindow.destroy).pack()
+
     
-    # Mostramos el contenido de la base de datos
-    mostrarContenidoTablas()
 
 def eliminarDetallePedido():
     global cursor
@@ -132,23 +140,34 @@ def eliminarDetallePedido():
     mostrarContenidoTablas()
 
 def crearPedido(cliente):
-    global cursor, subwindow
-
-    # Insertamos el pedido en su correspondiente tabla
-    cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, sysdate)")
+    global cursor, clientWindow
 
     # Savepoint previo a crear pedido
     cursor.execute(f"savepoint Pedido")
 
-def cancelarPedido():
-    global cursor
+    # Insertamos el pedido en su correspondiente tabla
+    cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, sysdate)")
 
-    cursor.execute("rollback Pedido")
+    # Savepoint previo a crear cualquiera de los detallepedido
+    cursor.execute(f"savepoint DetallePedido")
+
+    cerrar_ventana()
+    
+def cancelarPedido():
+    global cursor, subwindow, window
+
+    cursor.execute("rollback to Pedido")
     # Mostramos el contenido de la base de datos
     mostrarContenidoTablas()
 
+    # Destruimos la subventana
+    subwindow.destroy()
+
+    # Remostramos la ventana
+    window.deiconify()
+
 def finalizarPedido():
-    global cursor, subwindow, window
+    global cursor, subwindow, window, contador_pedidos
 
     cursor.execute("commit")
 
@@ -164,7 +183,15 @@ def finalizarPedido():
 def altaPedido():
     global cursor, window, subwindow, contador_pedidos
 
-    # TODO: Cambiar para usar Frames
+    #Creamos la ventana para introducir los datos del cliente
+    global clienteWindow    #declaramos la ventana como global para poder cerrarla al crear el pedido
+    clienteWindow = tk.Toplevel()
+    clienteWindow.title("Datos Cliente")
+    clienteWindow.geometry("500x500")
+    clienteWindow.configure(background="#E1FBFF")
+    clienteWindow.focus()
+
+    #Creamos la ventana del submenú
     subwindow = tk.Toplevel()
     subwindow.title("Dar de Alta Pedido")
     subwindow.geometry("700x600")
@@ -173,12 +200,14 @@ def altaPedido():
     tk.Label(subwindow, text="Dar de Alta Pedido", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16)).pack()
 
     # Introducir código de cliente
-    cliente = tk.StringVar(subwindow)
-    tk.Label(subwindow, text="Código Cliente", justify="center").pack()
-    tk.Entry(subwindow, justify="center", textvariable=cliente).pack()
+    cliente = tk.StringVar(clienteWindow)
+    tk.Label(clienteWindow, text="Código Cliente", justify="center").pack()
+    tk.Entry(clienteWindow, justify="center", textvariable=cliente).pack()
 
     # Botones del menú
-    tk.Button(subwindow, text="Añadir cliente", bg="#27ADC1", fg="#E1FBFF", width=10, command=lambda:crearPedido(cliente)).pack()
+    newCliente = tk.Button(clienteWindow, text="Añadir cliente", bg="#27ADC1", fg="#E1FBFF", width=10, state="normal", command=lambda:crearPedido(cliente))
+    newCliente.pack()
+    #tk.Button(clienteWindow, text="Cerrar", bg="#27ADC1", fg="#E1FBFF", width=10, command=clienteWindow.destroy).pack()
     tk.Button(subwindow, text="Añadir detalle de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=detallePedido).pack()
     tk.Button(subwindow, text="Eliminar todos los detalles de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=eliminarDetallePedido).pack()
     tk.Button(subwindow, text="Cancelar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=cancelarPedido).pack()
@@ -187,6 +216,11 @@ def altaPedido():
     # Ocultamos la ventana
     window.withdraw()
     
+
+def cerrar_ventana():
+    global clienteWindow
+
+    clienteWindow.destroy()
 
 def salir():
     global window
