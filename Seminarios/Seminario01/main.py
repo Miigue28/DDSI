@@ -12,7 +12,6 @@ window = None
 subwindow = None
 clientwindow = None
 contador_pedidos :int = 0
-table_name = list({"DETALLEPEDIDO", "STOCK", "PEDIDO"})
 
 def db_connect():
     global connection, cursor
@@ -30,7 +29,7 @@ def db_close():
     connection.close()
 
 def mostrarContenidoTablas():
-    global cursor, table_name
+    global cursor
     
     try:
         print(f"\n---------- DETALLEPEDIDO ----------\n")
@@ -54,7 +53,7 @@ def mostrarContenidoTablas():
         messagebox.showerror(message=f"La tabla PEDIDO no existe")
 
 def crearStock():
-    global cursor, table_name
+    global cursor
 
     # Comprobamos que las tablas existen, en dicho caso se destruyen
     cursor.execute(f"select count(*) from user_tables where table_name = 'DETALLEPEDIDO'")
