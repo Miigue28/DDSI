@@ -1,24 +1,27 @@
 import oracledb
+import db_config
 import tkinter as tk
 import csv
+from tkinter import messagebox
+from datetime import date
 
 # Global Variables
 cursor = None
 connection = None
 window = None
 subwindow = None
-clienteWindow = None
+clientwindow = None
 contador_pedidos :int = 0
 table_name = list({"DETALLEPEDIDO", "STOCK", "PEDIDO"})
 
 def db_connect():
     global connection, cursor
     try:
-        cp = oracledb.ConnectParams(user="x6257747", password="x6257747", host="oracle0.ugr.es", port=1521, service_name="practbd")
+        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
         connection = oracledb.connect(params=cp)
         cursor = connection.cursor()
     except Exception as e:
-        print(f"\n\n[!] Error connecting to the database\n {e}")
+        messagebox.showerror(title="Conexión", message=f"Error al conectarse a la base de datos")
         exit(1)
 
 def db_close():
@@ -29,23 +32,31 @@ def db_close():
 def mostrarContenidoTablas():
     global cursor, table_name
     
-    for i in range(3):
-        try:
-            print(f"{table_name[i]}")
-            for r in cursor.execute(f"select * from {table_name[i]}"):
-                print(r)
-        except:
-            print(f"\n[!] Error: La tabla {table_name[i]} no existe")
+    try:
+        print(f"\n---------- DETALLEPEDIDO ----------\n")
+        for r in cursor.execute(f"select * from DETALLEPEDIDO"):
+            print(f"Pedido: {r[0]},\tProducto: {r[1]},\tCantidad: {r[2]}")
+    except:
+        messagebox.showerror(message=f"La tabla DETALLEPEDIDO no existe")
+    
+    try:
+        print(f"\n---------- STOCK ----------\n")
+        for r in cursor.execute(f"select * from STOCK"):
+            print(f"Producto: {r[0]},\tCantidad: {r[2]},\tNombre: {r[1]}")
+    except:
+        messagebox.showerror(message=f"La tabla STOCK no existe")
+
+    try:
+        print(f"\n---------- PEDIDO ----------\n")
+        for r in cursor.execute(f"select * from PEDIDO"):
+            print(f"Pedido: {r[0]},\tCliente: {r[1]},\tFecha: {r[2].date()}")
+    except:
+        messagebox.showerror(message=f"La tabla PEDIDO no existe")
 
 def crearStock():
     global cursor, table_name
+
     # Comprobamos que las tablas existen, en dicho caso se destruyen
-    #for i in range(3):
-    #    try:
-    #        cursor.execute(f"DROP TABLE {table_name[i]}")
-    #    except:
-    #        print(f"\n[!] Error al eliminar tabla {table_name[i]}")
-    
     cursor.execute(f"select count(*) from user_tables where table_name = 'DETALLEPEDIDO'")
     if cursor.fetchone()[0] > 0:
         cursor.execute("drop table DETALLEPEDIDO")
@@ -89,74 +100,74 @@ def crearStock():
 
 def recogerDatos(producto, cantidad):
     global cursor
-
-    # Savepoint previo a crear DetallePedido
-    #cursor.execute("savepoint DetallePedido")
     
     # Verificar si el código de producto existe
     cursor.execute(f"select count(cProducto) from STOCK where cProducto='{int(producto.get())}'")
     if cursor.fetchone()[0] == 0:
-        # Messagebox
-        print("\n\n[!] Error: Código de producto no existente\n")
+        messagebox.showinfo(title="Producto", message="Código de producto no existente")
 
-    # Verificar que hay cantidad suficiente del producto
-    cursor.execute(f"select Cantidad from STOCK where cProducto = '{int(producto.get())}'")
-    if int(cursor.fetchone()[0]) >= int(cantidad.get()):
-        cursor.execute(f"insert into DETALLEPEDIDO values({contador_pedidos}, {int(producto.get())}, {int(cantidad.get())})")
-        cursor.execute(f"update STOCK set Cantidad = Cantidad - {int(cantidad.get())} where cProducto = {int(producto.get())}")
-        # Mostramos el contenido de la base de datos
-        mostrarContenidoTablas()
+    # Verificar si el producto ya ha sido introducido previamente
+    cursor.execute(f"select count(*) from DetallePedido where cProducto = '{int(producto.get())}' and cPedido = '{contador_pedidos}'")
+    if cursor.fetchone()[0] > 0:
+        messagebox.showinfo(title="Producto", message="Ya has añadido ese producto al Pedido")
     else:
-        # Messagebox
-        print("\n\n[!] Error: Cantidad de producto insuficiente\n") # Se podría gestionar algo mejor esto
-
+        # Verificar que hay cantidad suficiente del producto
+        cursor.execute(f"select Cantidad from STOCK where cProducto = '{int(producto.get())}'")
+        if int(cursor.fetchone()[0]) >= int(cantidad.get()):
+            cursor.execute(f"insert into DETALLEPEDIDO values({contador_pedidos}, {int(producto.get())}, {int(cantidad.get())})")
+            cursor.execute(f"update STOCK set Cantidad = Cantidad - {int(cantidad.get())} where cProducto = {int(producto.get())}")
+            # Mostramos el contenido de la base de datos
+            mostrarContenidoTablas()
+        else:
+            messagebox.showinfo(title="Producto", message="Cantidad de producto insuficiente")
 
 def detallePedido():
     global subwindow, contador_pedidos
 
     detallePedidoWindow = tk.Toplevel()
     detallePedidoWindow.title("Detalle Pedido")
-    detallePedidoWindow.geometry("600x600")
+    detallePedidoWindow.geometry("500x500")
     detallePedidoWindow.configure(background="#E1FBFF")
 
     # Recogemos la información del pedido
     producto = tk.StringVar(detallePedidoWindow)
-    tk.Label(detallePedidoWindow, text="Código Producto", justify="center").pack()
-    tk.Entry(detallePedidoWindow, justify="center", textvariable=producto).pack()
+    tk.Label(detallePedidoWindow, text="Código Producto", bg="#E1FBFF", fg="#27ADC1", justify="center").pack(pady=10)
+    tk.Entry(detallePedidoWindow, justify="center", textvariable=producto).pack(pady=10)
 
     cantidad = tk.StringVar(detallePedidoWindow)
-    tk.Label(detallePedidoWindow, text="Cantidad", justify="center").pack()
-    tk.Entry(detallePedidoWindow, justify="center", textvariable=cantidad).pack()
-    tk.Button(detallePedidoWindow, text="Añadir Datos", bg="#00A8E8", fg="black", width=10, command=lambda:recogerDatos(producto, cantidad)).pack()
-    tk.Button(detallePedidoWindow, text="Cerrar", bg="#00A8E8", fg="black", width=10, command=detallePedidoWindow.destroy).pack()
-
-    
+    tk.Label(detallePedidoWindow, text="Cantidad", bg="#E1FBFF", fg="#27ADC1", justify="center").pack(pady=10)
+    tk.Entry(detallePedidoWindow, justify="center", textvariable=cantidad).pack(pady=10)
+    tk.Button(detallePedidoWindow, text="Añadir Datos", bg="#27ADC1", fg="#E1FBFF", width=20, command=lambda:recogerDatos(producto, cantidad)).pack()
+    tk.Button(detallePedidoWindow, text="Cerrar", bg="#27ADC1", fg="#E1FBFF", width=20, command=detallePedidoWindow.destroy).pack()
 
 def eliminarDetallePedido():
     global cursor
 
     cursor.execute("rollback to DetallePedido")
+
     # Mostramos el contenido de la base de datos
     mostrarContenidoTablas()
 
 def crearPedido(cliente):
-    global cursor, clientWindow
+    global cursor, clientwindow
 
     # Savepoint previo a crear pedido
     cursor.execute(f"savepoint Pedido")
 
     # Insertamos el pedido en su correspondiente tabla
-    cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, sysdate)")
+    cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, CURRENT_DATE)")
 
     # Savepoint previo a crear cualquiera de los detallepedido
     cursor.execute(f"savepoint DetallePedido")
 
-    cerrar_ventana()
+    # Destruimos la subventana
+    clientwindow.destroy()
     
 def cancelarPedido():
     global cursor, subwindow, window
 
     cursor.execute("rollback to Pedido")
+
     # Mostramos el contenido de la base de datos
     mostrarContenidoTablas()
 
@@ -181,46 +192,39 @@ def finalizarPedido():
     window.deiconify()
 
 def altaPedido():
-    global cursor, window, subwindow, contador_pedidos
+    global cursor, window, subwindow, clientwindow, contador_pedidos
 
-    #Creamos la ventana para introducir los datos del cliente
-    global clienteWindow    #declaramos la ventana como global para poder cerrarla al crear el pedido
-    clienteWindow = tk.Toplevel()
-    clienteWindow.title("Datos Cliente")
-    clienteWindow.geometry("500x500")
-    clienteWindow.configure(background="#E1FBFF")
-    clienteWindow.focus()
+    # Creamos la ventana para introducir los datos del cliente
+    clientwindow = tk.Toplevel()
+    clientwindow.title("Datos Cliente")
+    clientwindow.geometry("500x500")
+    clientwindow.configure(background="#E1FBFF", pady=20)
+    clientwindow.focus()
 
-    #Creamos la ventana del submenú
+    # Creamos la ventana del submenú
     subwindow = tk.Toplevel()
     subwindow.title("Dar de Alta Pedido")
-    subwindow.geometry("700x600")
-    subwindow.configure(background="#E1FBFF")
+    subwindow.geometry("700x700")
+    subwindow.configure(background="#E1FBFF", pady=20)
 
+    # Encabezado de la ventana
     tk.Label(subwindow, text="Dar de Alta Pedido", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16)).pack()
 
     # Introducir código de cliente
-    cliente = tk.StringVar(clienteWindow)
-    tk.Label(clienteWindow, text="Código Cliente", justify="center").pack()
-    tk.Entry(clienteWindow, justify="center", textvariable=cliente).pack()
+    cliente = tk.StringVar(clientwindow)
+    tk.Label(clientwindow, text="Código Cliente", bg="#E1FBFF", fg="#27ADC1", justify="center").pack()
+    tk.Entry(clientwindow, justify="center", textvariable=cliente).pack(pady=10)
+    tk.Button(clientwindow, text="Añadir cliente", bg="#27ADC1", fg="#E1FBFF", width=20, state="normal", command=lambda:crearPedido(cliente)).pack(pady=10)
 
     # Botones del menú
-    newCliente = tk.Button(clienteWindow, text="Añadir cliente", bg="#27ADC1", fg="#E1FBFF", width=10, state="normal", command=lambda:crearPedido(cliente))
-    newCliente.pack()
     #tk.Button(clienteWindow, text="Cerrar", bg="#27ADC1", fg="#E1FBFF", width=10, command=clienteWindow.destroy).pack()
-    tk.Button(subwindow, text="Añadir detalle de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=detallePedido).pack()
-    tk.Button(subwindow, text="Eliminar todos los detalles de producto", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=eliminarDetallePedido).pack()
-    tk.Button(subwindow, text="Cancelar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=cancelarPedido).pack()
-    tk.Button(subwindow, text="Finalizar Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=finalizarPedido).pack()
+    tk.Button(subwindow, text="Añadir detalle de producto", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=detallePedido).pack()
+    tk.Button(subwindow, text="Eliminar todos los detalles de producto", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=eliminarDetallePedido).pack()
+    tk.Button(subwindow, text="Cancelar Pedido", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=cancelarPedido).pack()
+    tk.Button(subwindow, text="Finalizar Pedido", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=finalizarPedido).pack()
 
     # Ocultamos la ventana
     window.withdraw()
-    
-
-def cerrar_ventana():
-    global clienteWindow
-
-    clienteWindow.destroy()
 
 def salir():
     global window
@@ -232,28 +236,29 @@ def salir():
     window.destroy()
 
 def main():
+    global window
+
+    # Conexión a la base de datos
     db_connect()
 
-    global window
     # Configuración de la ventana principal
     window = tk.Tk()
     window.title("Menú Principal")
-    window.geometry("700x600")
-    window.configure(background="#E1FBFF")
+    window.geometry("700x700")
+    window.configure(background="#E1FBFF", pady=20)
 
-    # Etiqueta de título
-    titulo = tk.Label(window, text="Menú Principal", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16))
-    titulo.pack()
+    # Encabezado de la ventana
+    tk.Label(window, text="Menú Principal", bg="#E1FBFF", fg="#27ADC1", font=("Arial", 16)).pack()
 
     # Imagen
-    imagen = tk.PhotoImage(file="carro.png")
-    lbl = tk.Label(window, image=imagen).pack()
+    imagen = tk.PhotoImage(file="resources/carro.png")
+    tk.Label(window, bg="#E1FBFF", image=imagen).pack()
 
     # Botones del menú
-    tk.Button(window, text="Crear Stock", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=crearStock).pack()
-    tk.Button(window, text="Dar de Alta Pedido", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=altaPedido).pack()
-    tk.Button(window, text="Mostrar Contenido Tablas", bg="#27ADC1", fg="#E1FBFF", width=30, height=3, command=mostrarContenidoTablas).pack()
-    tk.Button(window, text="Salir", bg="#27ADC1", fg="#E1FBFF", width=30, height=3,command=salir).pack()
+    tk.Button(window, text="Crear Stock", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=crearStock).pack()
+    tk.Button(window, text="Dar de Alta Pedido", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=altaPedido).pack()
+    tk.Button(window, text="Mostrar Contenido Tablas", bg="#27ADC1", fg="#E1FBFF", width=35, height=3, command=mostrarContenidoTablas).pack()
+    tk.Button(window, text="Salir", bg="#27ADC1", fg="#E1FBFF", width=35, height=3,command=salir).pack()
 
     # Ejecutar la ventana
     window.mainloop()
