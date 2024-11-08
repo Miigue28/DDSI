@@ -100,25 +100,32 @@ def crearStock():
 def recogerDatos(producto, cantidad):
     global cursor
     
-    # Verificar si el código de producto existe
-    cursor.execute(f"select count(cProducto) from STOCK where cProducto='{int(producto.get())}'")
-    if cursor.fetchone()[0] == 0:
-        messagebox.showinfo(title="Producto", message="Código de producto no existente")
-
-    # Verificar si el producto ya ha sido introducido previamente
-    cursor.execute(f"select count(*) from DetallePedido where cProducto = '{int(producto.get())}' and cPedido = '{contador_pedidos}'")
-    if cursor.fetchone()[0] > 0:
-        messagebox.showinfo(title="Producto", message="Ya has añadido ese producto al Pedido")
+    # Verificar si se ha introducido un código de producto y una cantidad de producto
+    try:
+    	prueba1 = int(producto.get())
+    	prueba2 = int(cantidad.get())
+    except ValueError:
+    	messagebox.showinfo(title="Entrada", message="Se debe introducir un código de producto y una cantidad de producto")
     else:
-        # Verificar que hay cantidad suficiente del producto
-        cursor.execute(f"select Cantidad from STOCK where cProducto = '{int(producto.get())}'")
-        if int(cursor.fetchone()[0]) >= int(cantidad.get()):
-            cursor.execute(f"insert into DETALLEPEDIDO values({contador_pedidos}, {int(producto.get())}, {int(cantidad.get())})")
-            cursor.execute(f"update STOCK set Cantidad = Cantidad - {int(cantidad.get())} where cProducto = {int(producto.get())}")
-            # Mostramos el contenido de la base de datos
-            mostrarContenidoTablas()
-        else:
-            messagebox.showinfo(title="Producto", message="Cantidad de producto insuficiente")
+    	# Verificar si el código de producto existe
+    	cursor.execute(f"select count(cProducto) from STOCK where cProducto='{int(producto.get())}'")
+    	if cursor.fetchone()[0] == 0:
+        	messagebox.showinfo(title="Producto", message="Código de producto no existente")
+
+    	# Verificar si el producto ya ha sido introducido previamente
+    	cursor.execute(f"select count(*) from DetallePedido where cProducto = '{int(producto.get())}' and cPedido = '{contador_pedidos}'")
+    	if cursor.fetchone()[0] > 0:
+        	messagebox.showinfo(title="Producto", message="Ya has añadido ese producto al Pedido")
+    	else:        	
+        	# Verificar que hay cantidad suficiente del producto
+        	cursor.execute(f"select Cantidad from STOCK where cProducto = '{int(producto.get())}'")
+        	if int(cursor.fetchone()[0]) >= int(cantidad.get()):
+        		cursor.execute(f"insert into DETALLEPEDIDO values({contador_pedidos}, {int(producto.get())}, {int(cantidad.get())})")
+        		cursor.execute(f"update STOCK set Cantidad = Cantidad - {int(cantidad.get())} where cProducto = {int(producto.get())}")
+        		# Mostramos el contenido de la base de datos
+        		mostrarContenidoTablas()
+        	else:
+            		messagebox.showinfo(title="Producto", message="Cantidad de producto insuficiente")
 
 def detallePedido():
     global subwindow, contador_pedidos
@@ -148,14 +155,22 @@ def eliminarDetallePedido():
     mostrarContenidoTablas()
 
 def crearPedido(cliente):
-    global cursor, clientwindow
+    global cursor, clientwindow, contador_pedidos
 
     # Savepoint previo a crear pedido
     cursor.execute(f"savepoint Pedido")
-
-    # Insertamos el pedido en su correspondiente tabla
-    cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, CURRENT_DATE)")
-
+    
+    # Actualizamos contador_pedidos con el número de tuplas en la tabla PEDIDO
+    cursor.execute(f"select count(*) from PEDIDO")
+    contador_pedidos = cursor.fetchone()[0]
+    
+    # Verificar si se ha introducido un código de cliente
+    try:
+    	# Insertamos el pedido en su correspondiente tabla
+    	cursor.execute(f"insert into PEDIDO values ({contador_pedidos}, {int(cliente.get())}, CURRENT_DATE)")
+    except ValueError:
+    	messagebox.showinfo(title="Entrada", message="Se debe introducir un código de cliente")
+    	
     # Savepoint previo a crear cualquiera de los detallepedido
     cursor.execute(f"savepoint DetallePedido")
 
