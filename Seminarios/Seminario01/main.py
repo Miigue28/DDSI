@@ -33,7 +33,7 @@ def mostrarContenidoTablas():
     
     try:
         print(f"\n---------- DETALLEPEDIDO ----------\n")
-        for r in cursor.execute(f"select * from DETALLEPEDIDO"):
+        for r in cursor.execute(f"select * from DETALLEPEDIDO order by cPedido"):
             print(f"Pedido: {r[0]},\tProducto: {r[1]},\tCantidad: {r[2]}")
     except:
         messagebox.showerror(message=f"La tabla DETALLEPEDIDO no existe")
@@ -47,7 +47,7 @@ def mostrarContenidoTablas():
 
     try:
         print(f"\n---------- PEDIDO ----------\n")
-        for r in cursor.execute(f"select * from PEDIDO"):
+        for r in cursor.execute(f"select * from PEDIDO order by cPedido"):
             print(f"Pedido: {r[0]},\tCliente: {r[1]},\tFecha: {r[2].date()}")
     except:
         messagebox.showerror(message=f"La tabla PEDIDO no existe")
@@ -213,7 +213,6 @@ def altaPedido():
     clientwindow.title("Datos Cliente")
     clientwindow.geometry("500x500")
     clientwindow.configure(background="#E1FBFF", pady=20)
-    clientwindow.focus()
 
     # Creamos la ventana del submenú
     subwindow = tk.Toplevel()
