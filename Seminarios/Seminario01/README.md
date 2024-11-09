@@ -1,7 +1,28 @@
-# Seminario 1 - DDSI
+# Seminario 1: Acceso a bases de datos
+
+## Diseño y Desarrollo de Sistemas de Información
+
+En primer lugar, será necesario crear un entorno virtual
+
+```
+python3 -m venv env
+```
+
+Una vez creado, lo activamos mediante
 
 ```shell
-python3 -m venv env
 source env/bin/activate
-pip install -r requirements.txt
 ```
+
+Finalmente, instalamos todas las dependencias necesarias
+
+```
+pip install -r requirements.txt
+`
+
+> Si no tienes `venv`, instálalo:
+>
+> ```
+> sudo apt-get install python3-venv
+> ```
+
