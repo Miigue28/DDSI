@@ -20,10 +20,11 @@ Finalmente, instalamos todas las dependencias necesarias
 pip install -r requirements.txt
 ```
 
-> Si no tienes `venv`, instálalo:
+> Si no tienes `venv` o `tk`, instálalo:
 >
 > ```
 > sudo apt-get install python3-venv
+> sudo apt-get install python3-tk
 > ```
 
 Además, será necesario insertar las credenciales de conexión en el archivo `db_config.py`
