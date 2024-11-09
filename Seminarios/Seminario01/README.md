@@ -26,3 +26,5 @@ pip install -r requirements.txt
 > sudo apt-get install python3-venv
 > ```
 
+Además, será necesario insertar las credenciales de conexión en el archivo `db_config.py`
+
