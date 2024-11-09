@@ -20,7 +20,7 @@ Finalmente, instalamos todas las dependencias necesarias
 pip install -r requirements.txt
 ```
 
-> Si no tienes `venv` o `tk`, instálalo:
+> Si no tienes `venv` o `tk`, instálalos:
 >
 > ```
 > sudo apt-get install python3-venv
