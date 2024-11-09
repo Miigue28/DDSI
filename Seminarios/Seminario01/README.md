@@ -10,7 +10,7 @@ python3 -m venv env
 
 Una vez creado, lo activamos mediante
 
-```shell
+```
 source env/bin/activate
 ```
 
@@ -18,7 +18,7 @@ Finalmente, instalamos todas las dependencias necesarias
 
 ```
 pip install -r requirements.txt
-`
+```
 
 > Si no tienes `venv`, instálalo:
 >
