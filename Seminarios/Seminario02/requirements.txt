@@ -1,0 +1,16 @@
+blinker==1.9.0
+build==1.2.2.post1
+click==8.1.7
+coverage==7.6.9
+Flask==3.1.0
+-e git+ssh://git@github.com/Miigue28/DDSI.git@ddf688fbba82b32bbb71315367feabd82d783f6c#egg=flaskr&subdirectory=Seminarios/Seminario02
+iniconfig==2.0.0
+itsdangerous==2.2.0
+Jinja2==3.1.4
+MarkupSafe==3.0.2
+packaging==24.2
+pluggy==1.5.0
+pyproject_hooks==1.2.0
+pytest==8.3.4
+waitress==3.0.2
+Werkzeug==3.1.3
