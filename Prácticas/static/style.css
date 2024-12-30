@@ -1,0 +1,96 @@
+html {
+  font-family: Roboto;
+  background: white;
+  padding: 0;
+}
+
+h1 {
+  background-color: #ffc3c3;
+  color: #cc2f2e;
+  text-align: center;
+  margin: 0;
+}
+
+.worker-info, .options {
+  display: inline-block;
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: #cc2f2e;
+  border-style: solid;
+  padding: 10px;
+  margin: 25px;
+}
+
+.worker-info {
+  width: 200px;
+  height: 300px;
+}
+
+.worker-info button {
+  background-color: white;
+  color: #cc2f2e;
+  border-color: #cc2f2e;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+  cursor: pointer;
+}
+
+.worker-info button:hover {
+  background-color: #cc2f2e;
+  color: white;
+}
+
+.options {
+  vertical-align: top;
+  width: 500px;
+  height: 300px;
+}
+
+.avatar {
+  display: block;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.options button {
+  height: 125px;
+  width: 225px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.people-button {
+  background-color: #cc2f2e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: opacity 0.15s;
+}
+
+.people-button:hover {
+  opacity: 0.75;
+}
+
+.services-button {
+  background-color: white;
+  color: #cc2f2e;
+  border-color: #cc2f2e;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.services-button:hover {
+  background-color: #cc2f2e;
+  color: white;
+}
+
+.services-button:active {
+  opacity: 0.75;
+}
+
+  

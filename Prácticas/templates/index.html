@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="worker-info">
+  <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
+
+  <h2>John Doe</h2>
+  <p>
+    <strong>User:</strong> johndoe
+  </p>
+  <p>
+    <strong>Email:</strong> doe@john.com
+  </p>
+  <button>LOGOUT</button>
+</div>
+
+<div class="options">
+  <div class="upper-options">
+    <button class="people-button">Empleados</button>
+    <button class="services-button">Reservas</button>
+  </div>
+  <div class="lower-options">
+    <button class="services-button">Servicios</button>
+    <button class="people-button">Clientes</button>
+  </div>
+</div>
+{% endblock %}
