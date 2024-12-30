@@ -45,8 +45,10 @@ docker compose up
 
 - [ ] Conexión a la base de datos
 - [ ] Creación de tablas e inserción de tuplas
+- [ ] Gestión de disparadores
 - [ ] Diseño de la interfaz de usuario
 - [ ] Implementación de la interfaz de usuario
-- [ ] Diseño de funcionalidades del backend
+- [ ] Diseño de funcionalidades del backend (formulario para dar de alta servicios y generar reservas)
 - [ ] Implementación del backend
 - [ ] Tests
+- [ ] Aspectos legales (identificar datos sensibles, incluir mensajes informando a los usuarios, trámites legales para el registro de la BD)
