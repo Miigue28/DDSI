@@ -6,7 +6,11 @@ app.secret_key = 'GRXViajes'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('dashboard.html')
+
+@app.route('/services')
+def services():
+    return render_template('services.html')
 
 #from . import db
 #db.init_app(app)
