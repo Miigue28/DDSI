@@ -73,7 +73,8 @@ def createTables():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS Asociado (
             cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva),
-            Descripcion VARCHAR(500)
+            cServicio VARCHAR(10)
+            CONSTRAINT clave_primaria_acociado PRIMARY KEY (cReserva, cServicio)
     )""")
 
     cursor.execute("""
@@ -115,6 +116,64 @@ def createTables():
             Ubicacion VARCHAR(30),
             Telefono VARCHAR(9)
     )""")
+
+    #Insertamos tuplas
+    with open("PuestoSueldo.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into PuestoSueldo values('{row[0]}', '{row[1]}')")
+
+    with open("empleados.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Empleado values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}')")
+
+    with open("clientes.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Cliente values('{row[0]}', '{row[1]}','{row[2]}', '{row[3]}')")
+
+    with open("Reservas.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Reservas values('{row[0]}', '{row[1]}')")
+
+    with open("TieneReserva.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into TieneReserva values('{row[0]}', '{row[1]}')")
+
+    with open("servicios.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Servicios values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')")
+
+    with open("Asociado.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Asociado values('{row[0]}', '{row[1]}')")
+
+    with open("NombreDescripcion.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into NombreDescripcion values('{row[0]}', '{row[1]}')")
+
+    with open("ActividadesTuristicas.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}', '{row[7]}')")
+
+    with open("Transportes.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}')")
+
+    with open("Alojamientos.csv", "r") as file:
+        reader = csv.reader(file)
+        for row in reader:
+            cursor.execute(f"insert into Alojamientos values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}')")
+
+
         
 
 def mostrarContenidoTablas(nombreTabla):
