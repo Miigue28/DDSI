@@ -1,0 +1,117 @@
+html {
+  font-family: Roboto;
+  background: white;
+  padding: 0;
+}
+
+body {
+  margin: 0 auto;
+}
+
+h1 {
+  background-color: #cc2f2e;
+  color: white;
+  height: 25px;
+  padding: 25px;
+  text-align: center;
+  margin: 0;
+}
+
+footer {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  background-color: #cc2f2e;
+  color: white;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  column-gap: 25px;
+  height: 350px;
+}
+
+.worker-info, .options-grid {
+  border-radius: 10px;
+  border-width: 2px;
+  border-color: #cc2f2e;
+  border-style: solid;
+  padding: 10px;
+  margin: 25px;
+}
+
+.worker-info button {
+  background-color: white;
+  color: #cc2f2e;
+  border-color: #cc2f2e;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+  cursor: pointer;
+}
+
+.worker-info button:hover {
+  background-color: #cc2f2e;
+  color: white;
+}
+
+.avatar {
+  display: block;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 500px;
+  height: 300px;
+}
+
+.people-button {
+  background-color: #cc2f2e;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: opacity 0.15s;
+  cursor: pointer;
+}
+
+.people-button:hover {
+  opacity: 0.75;
+}
+
+.services-button {
+  background-color: white;
+  color: #cc2f2e;
+  border-color: #cc2f2e;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 5px;
+  transition: background-color 0.15s, color 0.15s;
+  cursor: pointer;
+}
+
+.services-button:hover {
+  background-color: #cc2f2e;
+  color: white;
+}
+
+.services-button:active {
+  opacity: 0.75;
+}
+
+  
