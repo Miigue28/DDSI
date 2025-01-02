@@ -73,13 +73,13 @@ def createTables():
 
     #Creamos las tablas
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS PuestoSueldo (
+    CREATE TABLE PuestoSueldo (
         Puesto VARCHAR(20) CONSTRAINT puesto_clave_primaria PRIMARY KEY,
-        Sueldo NUMBER
+        Sueldo FLOAT
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Empleados (
+        CREATE TABLE Empleados (
             cEmpleado VARCHAR(10) CONSTRAINT codigo_empleado_clave_primaria PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
@@ -89,7 +89,7 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Clientes (
+        CREATE TABLE Clientes (
             DNI VARCHAR(9) CONSTRAINT dni_cliente_clave_primaria PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
@@ -97,40 +97,40 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Reservas (
+        CREATE TABLE Reservas (
             cReserva VARCHAR(10) CONSTRAINT codigo_reserva_clave_primaria PRIMARY KEY,
-            Precio NUMBER,
+            Precio FLOAT DEFAULT 0,
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS TieneReserva (
+        CREATE TABLE TieneReserva (
             cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva) PRIMARY KEY,
-            DNI CONSTRAINT dni_clave_externa REFERENCES Clientes(DNI)
+            DNI CONSTRAINT dni_clave_externa REFERENCES Clientes(DNI) ON DELETE CASCADE
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Servicios (
+        CREATE TABLE Servicios (
             cServicio VARCHAR(10) CONSTRAINT codigo_servicio_clave_primaria PRIMARY KEY,
-            Precio NUMBER,
+            Precio FLOAT,
             PlazasTotales INTEGER,
             PlazasLibres INTEGER
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Asociado (
-            cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva),
+        CREATE TABLE Asociado (
+            cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva) ON DELETE CASCADE,
             cServicio VARCHAR(10)
             CONSTRAINT clave_primaria_acociado PRIMARY KEY (cReserva, cServicio)
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS NombreDescripcion (
+        CREATE TABLE NombreDescripcion (
             Nombre CONSTRAINT nombre_clave_primaria PRIMARY KEY,
             Descripcion VARCHAR(500)
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ActividadesTuristicas (
+        CREATE TABLE ActividadesTuristicas (
             cServicio CONSTRAINT codigo_servicio_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
             Nombre CONSTRAINT nombre_clave_externa REFERENCES NombreDescripcion(Nombre),
             Tipo VARCHAR(20),
@@ -142,7 +142,7 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Transportes (
+        CREATE TABLE Transportes (
             cServicio CONSTRAINT codigo_actividad_turistica_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
             Tipo VARCHAR(30),
             Fecha DATE,
@@ -153,7 +153,7 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Alojamientos (
+        CREATE TABLE Alojamientos (
             cServicio CONSTRAINT codigo_servicio_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
             Nombre VARCHAR(50),
             Tipo VARCHAR(20),
@@ -162,6 +162,94 @@ def createTables():
             Ubicacion VARCHAR(30),
             Telefono VARCHAR(9)
     )""")
+
+    #Disparadores
+    
+    #Disparador para impedir que se inserte un sueldo negativo
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER sueldoNoNegativo
+            BEFORE INSERT OR UPDATE ON PuestoSueldo
+            FOR EACH ROW
+        BEGIN
+            IF :new.Sueldo < 0 THEN
+                raise_application_error(-20600, :new.Sueldo || 'El sueldo no puede ser negativo');
+            END IF;
+        END;
+    """)
+
+    #Disparador para impedir que se inserte un precio de servicio negativo
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER precioNoNegativo
+            BEFORE INSERT OR UPDATE ON Servicios
+            FOR EACH ROW
+        BEGIN
+            IF :new.Precio < 0 THEN
+                raise_application_error(-20600, :new.Precio || 'El sueldo no puede ser negativo');
+            END IF;
+        END;
+    """)
+
+    #Disparador para que al asociar (o eliminar) un servicio a una reserva, sume (o reste) el precio del servicio al precio de la reserva.
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER nuevoPrecio
+            AFTER INSERT OR DELETE ON Asociado
+            FOR EACH ROW
+        BEGIN
+            IF INSERTING THEN
+                UPDATE Reservas SET Precio = Precio + (SELECT Precio FROM Servicios WHERE cServicio = :new.cServicio);
+            ELSE
+                UPDATE Reservas SET Precio = Precio - (SELECT Precio FROM Servicios WHERE cServicio = :old.cServicio);
+            END IF;
+        END;
+    """)
+
+    #Disparador para impedir que se inserte una fecha de fin anterior a la fecha de inicio de una actividad turística
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER fechasCorrectasActividades
+            BEFORE INSERT OR UPDATE ON ActividadesTuristicas
+            FOR EACH ROW
+        BEGIN
+            IF :new.FechaInicio >= :new.FechaFin THEN
+                raise_application_error(-20600, :new.FechaInicio || :new.FechaFin || 'La fecha de inicio debe ser anterior a la fecha de fin');
+            END IF;
+        END;
+    """)
+
+    #Disparador para impedir que se inserte una hora de fin anterior a la hora de inicio de una actividad turística
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER horasCorrectasActividades
+            BEFORE INSERT OR UPDATE ON ActividadesTuristicas
+            FOR EACH ROW
+        BEGIN
+            IF :new.HoraInicio >= :new.HoraFin THEN
+                raise_application_error(-20600, :new.HoraInicio || :new.HoraFin || 'La hora de inicio debe ser anterior a la hora de fin');
+            END IF;
+        END;
+    """)
+
+    #Disparador para impedir que se inserte una fecha de salida anterior a la fecha de entrada de un alojamiento
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER fechasCorrectasAlojamientos
+            BEFORE INSERT OR UPDATE ON Alojamientos
+            FOR EACH ROW
+        BEGIN
+            IF :new.FechaEntrada >= :new.FechaSalida THEN
+                raise_application_error(-20600, :new.FechaEntrada || :new.FechaSalida || 'La fecha de entrada debe ser anterior a la fecha de salida');
+            END IF;
+        END;
+    """)
+
+    #Disparador para impedir que se inserte un numero de plazas libres mayor al numero de plazas totales de un servicio
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER plazasCorrectas
+            BEFORE INSERT OR UPDATE ON Servicios
+            FOR EACH ROW
+        BEGIN
+            IF :new.PlazasLibres > :new.PlazasTotales THEN
+                raise_application_error(-20600, :new.PlazasLibres || :new.PlazasTotales || 'El sueldo no puede ser negativo');
+            END IF;
+        END;
+    """)
 
     #Insertamos tuplas
     with open("PuestoSueldo.csv", "r") as file:
