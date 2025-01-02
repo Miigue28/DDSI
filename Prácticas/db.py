@@ -1,6 +1,5 @@
 import oracledb
 import db_config
-import tkinter as tk
 import csv
 from tkinter import messagebox
 from datetime import date
@@ -26,6 +25,53 @@ def db_close():
 
 def createTables():
 
+    # Borramos las tablas existentes
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'EMPLEADOS'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Empleados")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'PUESTOSUELDO'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table PuestoSueldo")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'TIENERESERVA'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table TieneReserva")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'ASOCIADO'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Asociado")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'ACTIVIDADESTURISTICAS'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table ActividadesTuristicas")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'TRANSPORTES'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Transportes")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'ALOJAMIENTOS'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Alojamientos")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'NOMBREDESCRIPCION'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table NombreDescripcion")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'SERVICIOS'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Servicios")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'RESERVAS'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Reservas")
+
+    cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'CLIENTES'")
+    if cursor.fetchone()[0] > 0:
+        cursor.execute("drop table Clientes")
+
+
+    #Creamos las tablas
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS PuestoSueldo (
         Puesto VARCHAR(20) CONSTRAINT puesto_clave_primaria PRIMARY KEY,
@@ -33,7 +79,7 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Empleado (
+        CREATE TABLE IF NOT EXISTS Empleados (
             cEmpleado VARCHAR(10) CONSTRAINT codigo_empleado_clave_primaria PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
@@ -43,7 +89,7 @@ def createTables():
     )""")
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Cliente (
+        CREATE TABLE IF NOT EXISTS Clientes (
             DNI VARCHAR(9) CONSTRAINT dni_cliente_clave_primaria PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
@@ -59,7 +105,7 @@ def createTables():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS TieneReserva (
             cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva) PRIMARY KEY,
-            DNI CONSTRAINT dni_clave_externa REFERENCES Cliente(DNI)
+            DNI CONSTRAINT dni_clave_externa REFERENCES Clientes(DNI)
     )""")
 
     cursor.execute("""
@@ -126,12 +172,12 @@ def createTables():
     with open("empleados.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Empleado values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}')")
+            cursor.execute(f"insert into Empleados values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}')")
 
     with open("clientes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Cliente values('{row[0]}', '{row[1]}','{row[2]}', '{row[3]}')")
+            cursor.execute(f"insert into Clientes values('{row[0]}', '{row[1]}','{row[2]}', '{row[3]}')")
 
     with open("Reservas.csv", "r") as file:
         reader = csv.reader(file)
@@ -176,20 +222,20 @@ def createTables():
 
         
 
-def mostrarContenidoTablas(nombreTabla):
-    global cursor
-    
-    try:
-        print(f"\n---------- {nombreTabla} ----------\n")
-        cursor.execute(f"select * from {nombreTabla}")
-        columns = [col[0] for col in cursor.description]
-        
-        print("\t".join(columns))  # Imprimir nombres de columnas
-        print("-" * 50)
-            
-        for row in cursor:
-            print("\t".join(map(str, row)))
-            
-    except:
-        messagebox.showerror(message=f"La tabla 'nombreTabla' no existe")
+#def mostrarContenidoTablas(nombreTabla):
+#    global cursor
+#    
+#    try:
+#        print(f"\n---------- {nombreTabla} ----------\n")
+#        cursor.execute(f"select * from {nombreTabla}")
+#        columns = [col[0] for col in cursor.description]
+#        
+#        print("\t".join(columns))  # Imprimir nombres de columnas
+#        print("-" * 50)
+#            
+#        for row in cursor:
+#            print("\t".join(map(str, row)))
+#            
+#    except:
+#        messagebox.showerror(message=f"La tabla 'nombreTabla' no existe")
     
