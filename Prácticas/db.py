@@ -110,7 +110,7 @@ def createTables():
 
     cursor.execute("""
         CREATE TABLE Servicios (
-            cServicio PRIMARY KEY,
+            cServicio VARCHAR(10) PRIMARY KEY,
             Precio FLOAT,
             PlazasTotales INTEGER,
             PlazasLibres INTEGER
