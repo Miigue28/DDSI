@@ -74,23 +74,23 @@ def createTables():
     #Creamos las tablas
     cursor.execute("""
     CREATE TABLE PuestoSueldo (
-        Puesto VARCHAR(20) CONSTRAINT puesto_clave_primaria PRIMARY KEY,
+        Puesto VARCHAR(20) PRIMARY KEY,
         Sueldo FLOAT
     )""")
 
     cursor.execute("""
         CREATE TABLE Empleados (
-            cEmpleado VARCHAR(10) CONSTRAINT codigo_empleado_clave_primaria PRIMARY KEY,
+            cEmpleado VARCHAR(10) PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
             DNI VARCHAR(9) UNIQUE,
-            CorreoElectronico VARCHAR(30)
-            Puesto CONSTRAINT puesto_clave_externa REFERENCES PuestoSueldo(Puesto)
+            CorreoElectronico VARCHAR(30),
+            Puesto REFERENCES PuestoSueldo(Puesto)
     )""")
 
     cursor.execute("""
         CREATE TABLE Clientes (
-            DNI VARCHAR(9) CONSTRAINT dni_cliente_clave_primaria PRIMARY KEY,
+            DNI VARCHAR(9) PRIMARY KEY,
             Nombre VARCHAR(20),
             Apellidos VARCHAR(40),
             CorreoElectronico VARCHAR(30)
@@ -98,19 +98,19 @@ def createTables():
 
     cursor.execute("""
         CREATE TABLE Reservas (
-            cReserva VARCHAR(10) CONSTRAINT codigo_reserva_clave_primaria PRIMARY KEY,
-            Precio FLOAT DEFAULT 0,
+            cReserva VARCHAR(10) PRIMARY KEY,
+            Precio FLOAT DEFAULT 0
     )""")
 
     cursor.execute("""
         CREATE TABLE TieneReserva (
-            cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva) PRIMARY KEY,
-            DNI CONSTRAINT dni_clave_externa REFERENCES Clientes(DNI) ON DELETE CASCADE
+            cReserva REFERENCES Reservas(cReserva) PRIMARY KEY,
+            DNI REFERENCES Clientes(DNI) ON DELETE CASCADE
     )""")
 
     cursor.execute("""
         CREATE TABLE Servicios (
-            cServicio VARCHAR(10) CONSTRAINT codigo_servicio_clave_primaria PRIMARY KEY,
+            cServicio VARCHAR(10) PRIMARY KEY,
             Precio FLOAT,
             PlazasTotales INTEGER,
             PlazasLibres INTEGER
@@ -118,35 +118,35 @@ def createTables():
 
     cursor.execute("""
         CREATE TABLE Asociado (
-            cReserva CONSTRAINT codigo_reserva_clave_externa REFERENCES Reservas(cReserva) ON DELETE CASCADE,
-            cServicio VARCHAR(10)
-            CONSTRAINT clave_primaria_acociado PRIMARY KEY (cReserva, cServicio)
+            cReserva REFERENCES Reservas(cReserva) ON DELETE CASCADE,
+            cServicio REFERENCES Servicios(cServicio) ON DELETE CASCADE,
+            PRIMARY KEY (cReserva, cServicio)
     )""")
 
     cursor.execute("""
         CREATE TABLE NombreDescripcion (
-            Nombre CONSTRAINT nombre_clave_primaria PRIMARY KEY,
+            Nombre VARCHAR(50) PRIMARY KEY,
             Descripcion VARCHAR(500)
     )""")
 
     cursor.execute("""
         CREATE TABLE ActividadesTuristicas (
-            cServicio CONSTRAINT codigo_servicio_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
-            Nombre CONSTRAINT nombre_clave_externa REFERENCES NombreDescripcion(Nombre),
+            cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
+            Nombre REFERENCES NombreDescripcion(Nombre),
             Tipo VARCHAR(20),
             FechaInicio DATE,
             FechaFin DATE,
-            HoraInicio TIME,
-            HoraFin TIME,
-            Ubicacion VARCHAR(30),
+            HoraInicio TIMESTAMP,
+            HoraFin TIMESTAMP,
+            Ubicacion VARCHAR(30)
     )""")
 
     cursor.execute("""
         CREATE TABLE Transportes (
-            cServicio CONSTRAINT codigo_actividad_turistica_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
+            cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
             Tipo VARCHAR(30),
             Fecha DATE,
-            Hora TIME,
+            Hora TIMESTAMP,
             Compañia VARCHAR(30),
             Origen VARCHAR(30),
             Destino VARCHAR(30)
@@ -154,7 +154,7 @@ def createTables():
 
     cursor.execute("""
         CREATE TABLE Alojamientos (
-            cServicio CONSTRAINT codigo_servicio_clave_externa REFRENCES Servicios(cServicio) PRIMARY KEY,
+            cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
             Nombre VARCHAR(50),
             Tipo VARCHAR(20),
             FechaEntrada DATE,
@@ -172,7 +172,7 @@ def createTables():
             FOR EACH ROW
         BEGIN
             IF :new.Sueldo < 0 THEN
-                raise_application_error(-20600, :new.Sueldo || 'El sueldo no puede ser negativo');
+                raise_application_error(-20600, :new.Sueldo || ' El sueldo no puede ser negativo');
             END IF;
         END;
     """)
@@ -184,7 +184,7 @@ def createTables():
             FOR EACH ROW
         BEGIN
             IF :new.Precio < 0 THEN
-                raise_application_error(-20600, :new.Precio || 'El sueldo no puede ser negativo');
+                raise_application_error(-20600, :new.Precio || ' El sueldo no puede ser negativo');
             END IF;
         END;
     """)
@@ -209,8 +209,8 @@ def createTables():
             BEFORE INSERT OR UPDATE ON ActividadesTuristicas
             FOR EACH ROW
         BEGIN
-            IF :new.FechaInicio >= :new.FechaFin THEN
-                raise_application_error(-20600, :new.FechaInicio || :new.FechaFin || 'La fecha de inicio debe ser anterior a la fecha de fin');
+            IF :new.FechaInicio > :new.FechaFin THEN
+                raise_application_error(-20600, :new.FechaInicio || :new.FechaFin || ' La fecha de inicio debe ser anterior a la fecha de fin');
             END IF;
         END;
     """)
@@ -222,7 +222,7 @@ def createTables():
             FOR EACH ROW
         BEGIN
             IF :new.HoraInicio >= :new.HoraFin THEN
-                raise_application_error(-20600, :new.HoraInicio || :new.HoraFin || 'La hora de inicio debe ser anterior a la hora de fin');
+                raise_application_error(-20600, :new.HoraInicio || :new.HoraFin || ' La hora de inicio debe ser anterior a la hora de fin');
             END IF;
         END;
     """)
@@ -233,8 +233,8 @@ def createTables():
             BEFORE INSERT OR UPDATE ON Alojamientos
             FOR EACH ROW
         BEGIN
-            IF :new.FechaEntrada >= :new.FechaSalida THEN
-                raise_application_error(-20600, :new.FechaEntrada || :new.FechaSalida || 'La fecha de entrada debe ser anterior a la fecha de salida');
+            IF :new.FechaEntrada > :new.FechaSalida THEN
+                raise_application_error(-20600, :new.FechaEntrada || :new.FechaSalida || ' La fecha de entrada debe ser anterior a la fecha de salida');
             END IF;
         END;
     """)
@@ -246,7 +246,7 @@ def createTables():
             FOR EACH ROW
         BEGIN
             IF :new.PlazasLibres > :new.PlazasTotales THEN
-                raise_application_error(-20600, :new.PlazasLibres || :new.PlazasTotales || 'El sueldo no puede ser negativo');
+                raise_application_error(-20600, :new.PlazasLibres || :new.PlazasTotales || ' El sueldo no puede ser negativo');
             END IF;
         END;
     """)
