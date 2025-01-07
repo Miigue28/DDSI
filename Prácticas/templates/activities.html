@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="services-grid">
+    <div class="show-database-content">
+        <table class="services-table">
+            <tr>
+              <th>Código</th>
+              <th>Fecha de inicio</th>
+              <th>Fecha de finalización</th>
+              <th>Hora de inicio</th>
+              <th>Hora de finalización</th>
+              <th>Nombre</th>
+              <th>Ubicación</th>
+              <th>Descripción</th>
+              <th>Tipo</th>
+              <th>Plazas totales</th>
+              <th>Plazas disponibles</th>
+            </tr>
+            <!-- 
+            {% for transport in transports %}
+                </tr>
+                <td>{{ ['code'] }}</td>
+                <td>{{ accomodation['start date'].strftime('%d/%m/%Y') }}</td>
+                <td>{{ accomodation['end date'].strftime('%d/%m/%Y') }}</td>
+                <td>{{ accomodation['start time'].strftime('%h:%m:%s') }}</td>
+                <td>{{ accomodation['end time'].strftime('%h:%m:%s') }}</td>
+                <td>{{ accomodation['name'] }}</td>
+                <td>{{ accomodation['location'] }}</td>
+                <td>{{ accomodation['description'] }}</td>
+                <td>{{ accomodation['type'] }}</td>
+                <td>{{ accomodation['total_places'] }}</td>
+                <td>{{ accomodation['available_places'] }}</td>
+                <tr>
+            {% endfor %} 
+            -->
+            <tr>
+                <td>45781238D</td>
+                <td>01/05/2025</td>
+                <td>01/05/2025</td>
+                <td>18:00:00</td>
+                <td>20:00:00</td>
+                <td>Museo de las Ciencias Naturales</td>
+                <td>Barcelona</td>
+                <td>Visita al Museo de las Ciencias Naturales</td>
+                <td>Museo</td>
+                <td>100</td>
+                <td>50</td>
+            <tr>
+          </table>
+    </div>
+    
+    <div class="form-container">
+        <h2>Insertar Actividad Turística</h2>
+        <form action="/guardar_tupla" method="post">
+            <label>Nombre:</label>
+            <input type="text" name="name" required>
+            <label>Tipo:</label>
+            <input type="text" name="type" required>
+            <label>Descripción:</label>
+            <input type="text" name="description" required>
+            <label>Ubicación:</label>
+            <input type="text" name="location" required>
+            <label>Fecha de inicio:</label>
+            <input type="date" name="start date" required>
+            <label>Fecha de finalización:</label>
+            <input type="date" name="end date" required>
+            <label>Hora de inicio:</label>
+            <input type="time" name="start time" required>
+            <label>Hora de finalización:</label>
+            <input type="time" name="end time" required>
+            <label>Plazas totales:</label>
+            <input type="number" name="total_places" min="0" max="100" required/>
+            <label>Plazas libres:</label>
+            <input type="number" name="available_places" min="0" max="100" required/>
+
+            <input type="submit" class="form-button" value="Guardar">
+        </form>
+    </div>
+</div>
+{% endblock %}

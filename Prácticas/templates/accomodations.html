@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="services-grid">
+    <div class="show-database-content">
+        <table class="services-table">
+            <tr>
+              <th>Código</th>
+              <th>Fecha de entrada</th>
+              <th>Fecha de salida</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Ubicación</th>
+              <th>Teléfono</th>
+              <th>Plazas totales</th>
+              <th>Plazas disponibles</th>
+            </tr>
+            <!-- 
+            {% for transport in transports %}
+                </tr>
+                <td>{{ accomodation['code'] }}</td>
+                <td>{{ accomodation['entry date'].strftime('%d/%m/%Y') }}</td>
+                <td>{{ accomodation['departure date'].strftime('%d/%m/%Y') }}</td>
+                <td>{{ accomodation['name'] }}</td>
+                <td>{{ accomodation['type'] }}</td>
+                <td>{{ accomodation['location'] }}</td>
+                <td>{{ accomodation['phone number'] }}</td>
+                <td>{{ accomodation['total_places'] }}</td>
+                <td>{{ accomodation['available_places'] }}</td>
+                <tr>
+            {% endfor %} 
+            -->
+            <tr>
+                <td>726351935E</td>
+                <td>01/05/2025</td>
+                <td>08/05/2025</td>
+                <td>Hotel Barceló</td>
+                <td>Hotel</td>
+                <td>Barcelona</td>
+                <td>612583639</td>
+                <td>100</td>
+                <td>30</td>
+            <tr>
+          </table>
+    </div>
+    
+    <div class="form-container">
+        <h2>Insertar Transporte</h2>
+        <form action="/guardar_tupla" method="post">
+            <label>Nombre:</label>
+            <input type="text" name="name" required>
+            <label>Tipo:</label>
+            <input type="text" name="type" required>
+            <label>Ubicación:</label>
+            <input type="text" name="location" required>
+            <label>Fecha de entrada:</label>
+            <input type="date" name="entry date" required>
+            <label>Fecha de salida:</label>
+            <input type="date" name="departure date" required>
+            <label>Teléfono:</label>
+            <input type="number" name="phone number" required>
+            <label>Plazas totales:</label>
+            <input type="number" name="total_seats" min="0" max="100" required/>
+            <label>Plazas libres:</label>
+            <input type="number" name="available_seats" min="0" max="100" required/>
+
+            <input type="submit" class="form-button" value="Guardar">
+        </form>
+    </div>
+</div>
+{% endblock %}
