@@ -196,9 +196,11 @@ def createTables():
             FOR EACH ROW
         BEGIN
             IF INSERTING THEN
-                UPDATE Reservas SET Precio = Precio + (SELECT Precio FROM Servicios WHERE cServicio = :new.cServicio);
+                UPDATE Reservas SET Precio = Precio + (SELECT Precio FROM Servicios WHERE cServicio = :new.cServicio)
+                WHERE cReserva = :new.cReserva;
             ELSE
-                UPDATE Reservas SET Precio = Precio - (SELECT Precio FROM Servicios WHERE cServicio = :old.cServicio);
+                UPDATE Reservas SET Precio = Precio - (SELECT Precio FROM Servicios WHERE cServicio = :old.cServicio)
+                WHERE cReserva = :old.cReserva;
             END IF;
         END;
     """)
