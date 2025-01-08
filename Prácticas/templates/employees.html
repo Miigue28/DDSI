@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="services-grid">
+    <div class="show-database-content">
+        <table class="services-table">
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Apellidos</th>
+              <th>DNI</th>
+              <th>Correo electrónico</th>
+              <th>Puesto</th>
+            </tr>
+            <!-- 
+            {% for employee in employees %}
+                </tr>
+                <td>{{ employee['code'] }}</td>
+                <td>{{ employee['name'] }}</td>
+                <td>{{ employee['surnames'] }}</td>
+                <td>{{ employee['ID'] }}</td>
+                <td>{{ employee['email'] }}</td>
+                <td>{{ employee['position'] }}</td>
+                <tr>
+            {% endfor %} 
+            -->
+            <tr>
+                <td>1</td>
+                <td>Manuel</td>
+                <td>Enríquez Ledesma</td>
+                <td>12345678B</td>
+                <td>manuelel@gmail.com</td>
+                <td>Director</td>
+            <tr>
+          </table>
+    </div>
+    
+    <div class="form-container">
+        <h2>Insertar Empleado</h2>
+        <form action="/guardar_tupla" method="post">
+            <label>Nombre:</label>
+            <input type="text" name="name" required>
+            <label>Apellido:</label>
+            <input type="text" name="surnames" required>
+            <label>DNI:</label>
+            <input type="text" name="ID" required>
+            <label>Correo electrónico:</label>
+            <input type="text" name="email" required>
+            <label>Puesto:</label>
+            <input type="text" name="position" required>
+
+            <input type="submit" class="form-button" value="Guardar">
+        </form>
+    </div>
+</div>
+{% endblock %}
