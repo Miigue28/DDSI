@@ -1,29 +1,13 @@
 import oracledb
 import db_config
 import csv
-from tkinter import messagebox
-from datetime import date
+from flask import g
 
 # Global Variables
 cursor = None
 connection = None
 
-def db_connect():
-    global connection, cursor
-    try:
-        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
-        connection = oracledb.connect(params=cp)
-        cursor = connection.cursor()
-    except Exception as e:
-        messagebox.showerror(title="Conexión", message=f"Error al conectarse a la base de datos")
-        exit(1)
-
-def db_close():
-    global connection, cursor
-    cursor.close()
-    connection.close()
-
-def createTables():
+def init_db():
 
     # Borramos las tablas existentes
     cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'EMPLEADOS'")
@@ -167,7 +151,7 @@ def createTables():
     
     #Disparador para impedir que se inserte un sueldo negativo
     cursor.execute("""
-        CREATE OR REPLACE TRIGGER sueldoNoNegativo
+        CREATE OR REPLACE TRIGGER sueldoNegativo
             BEFORE INSERT OR UPDATE ON PuestoSueldo
             FOR EACH ROW
         BEGIN
@@ -197,10 +181,10 @@ def createTables():
         BEGIN
             IF INSERTING THEN
                 UPDATE Reservas SET Precio = Precio + (SELECT Precio FROM Servicios WHERE cServicio = :new.cServicio)
-                WHERE cReserva = :new.cReserva;
+                   WHERE cReserva=:new.cReserva;
             ELSE
                 UPDATE Reservas SET Precio = Precio - (SELECT Precio FROM Servicios WHERE cServicio = :old.cServicio)
-                WHERE cReserva = :old.cReserva;
+                WHERE cReserva=:old.cReserva;
             END IF;
         END;
     """)
@@ -309,8 +293,22 @@ def createTables():
         for row in reader:
             cursor.execute(f"insert into Alojamientos values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}')")
 
-
+def get_db():
+    global connection, cursor
+    if 'db' not in g:
+        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
+        g.db = oracledb.connect(params=cp)
         
+        if cursor == 'None': 
+            cursor = connection.cursor()
+        else:
+            return cursor
+
+def close_db():
+    global connection, cursor
+    cursor.close()
+    connection.close()
+
 
 #def mostrarContenidoTablas(nombreTabla):
 #    global cursor
