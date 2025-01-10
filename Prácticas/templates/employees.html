@@ -37,17 +37,17 @@
     
     <div class="form-container">
         <h2>Insertar Empleado</h2>
-        <form action="{{ url_for('employees') }}" method="post">
+        <form action="/guardar_tupla" method="post">
             <label>Nombre:</label>
-            <input type="text" name="name" value="{{ request.form['name'] }}" required>
+            <input type="text" name="name" required>
             <label>Apellido:</label>
-            <input type="text" name="surnames" value="{{ request.form['surnames'] }}" required>
+            <input type="text" name="surnames" required>
             <label>DNI:</label>
-            <input type="text" name="dni" value="{{ request.form['dni'] }}" required>
+            <input type="text" name="dni" required>
             <label>Correo electrónico:</label>
-            <input type="text" name="email" value="{{ request.form['email'] }}" required>
+            <input type="text" name="email" required>
             <label>Puesto:</label>
-            <input type="text" name="position" value="{{ request.form['position'] }}" required>
+            <input type="text" name="position" required>
 
             <input type="submit" class="form-button" value="Guardar">
         </form>
