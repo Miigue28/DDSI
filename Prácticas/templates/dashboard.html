@@ -20,10 +20,10 @@
   </div>
   
   <div class="options-grid">
-    <button class="people-button">Empleados</button>
-    <button class="services-button">Reservas</button>
-    <button class="services-button">Servicios</button>
-    <button class="people-button">Clientes</button>
+    <a class="people-button"> Empleados</a>
+    <a class="services-button">Reservas</a>
+    <a href="{{ url_for('services') }}" class="services-button">Servicios</a>
+    <a href="{{ url_for('clients') }}" class="people-button"> Clientes</a>
   </div>
 </div>
 {% endblock %}

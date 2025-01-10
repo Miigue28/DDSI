@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, flash, redirect, url_for
+from db import cursor
 
 # Create and configure the app
 app = Flask(__name__, instance_relative_config=True)
@@ -8,9 +9,47 @@ app.secret_key = 'GRXViajes'
 def index():
     return render_template('dashboard.html')
 
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
 @app.route('/transports')
 def transports():
     return render_template('transports.html')
+
+@app.route('/reservations')
+def reservation():
+    return render_template('reservations.html')
+
+@app.route('/clients', methods=['GET', 'POST'])
+def clients():
+    #if request.method == 'POST':
+    #    dni = request.form['dni']
+    #    name = request.form['name']
+    #    surnames = request.form['surnames']
+    #    email = request.form['email']
+    #    
+    #    db = get_db()
+    #    db.execute(
+    #        'INSERT INTO post (title, body, author_id)'
+    #        ' VALUES (?, ?, ?)',
+    #        (dni, name, surnames, email)
+    #    )
+    #    db.commit()
+    #    return redirect(url_for('clients'))
+    return render_template('clients.html')
+
+@app.route('/employees')
+def employees():
+    return render_template('employees.html')
+
+@app.route('/accomodations')
+def accomodations():
+    return render_template('accomodations.html')
+
+@app.route('/activities')
+def activities():
+    return render_template('activities.html')
 
 #from . import db
 #db.init_app(app)
