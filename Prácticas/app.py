@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
-from db import cursor
 
 # Create and configure the app
 app = Flask(__name__, instance_relative_config=True)
@@ -51,8 +50,8 @@ def accomodations():
 def activities():
     return render_template('activities.html')
 
-#from . import db
-#db.init_app(app)
+import db
+db.init_app(app)
 
 #from . import auth
 #app.register_blueprint(auth.bp)
