@@ -1,5 +1,6 @@
 import oracledb
 import db_config
+import click
 import csv
 from flask import g
 
@@ -7,7 +8,32 @@ from flask import g
 cursor = None
 connection = None
 
+def get_db():
+    global cursor
+    if 'db' not in g:
+        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
+        g.db = oracledb.connect(params=cp)
+
+        click.echo('Conexión extablecida')
+
+        if cursor == None:
+            cursor = g.db.cursor()
+
+
+def close_db(e=None):
+    global cursor
+    
+    if cursor is not None:
+        cursor.close()
+
+    db = g.pop('db',None)
+
+    if db is not None:
+        db.close()
+
 def init_db():
+
+    get_db()
 
     # Borramos las tablas existentes
     cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'EMPLEADOS'")
@@ -118,10 +144,8 @@ def init_db():
             cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
             Nombre REFERENCES NombreDescripcion(Nombre),
             Tipo VARCHAR(20),
-            FechaInicio DATE,
-            FechaFin DATE,
-            HoraInicio TIMESTAMP,
-            HoraFin TIMESTAMP,
+            FechaHoraInicio DATE,
+            FechaHoraFin DATE,
             Ubicacion VARCHAR(30)
     )""")
 
@@ -129,8 +153,7 @@ def init_db():
         CREATE TABLE Transportes (
             cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
             Tipo VARCHAR(30),
-            Fecha DATE,
-            Hora TIMESTAMP,
+            FechaHora DATE,
             Compañia VARCHAR(30),
             Origen VARCHAR(30),
             Destino VARCHAR(30)
@@ -191,24 +214,12 @@ def init_db():
 
     #Disparador para impedir que se inserte una fecha de fin anterior a la fecha de inicio de una actividad turística
     cursor.execute("""
-        CREATE OR REPLACE TRIGGER fechasCorrectasActividades
+        CREATE OR REPLACE TRIGGER fechasHorasCorrectasActividades
             BEFORE INSERT OR UPDATE ON ActividadesTuristicas
             FOR EACH ROW
         BEGIN
-            IF :new.FechaInicio > :new.FechaFin THEN
-                raise_application_error(-20600, :new.FechaInicio || :new.FechaFin || ' La fecha de inicio debe ser anterior a la fecha de fin');
-            END IF;
-        END;
-    """)
-
-    #Disparador para impedir que se inserte una hora de fin anterior a la hora de inicio de una actividad turística
-    cursor.execute("""
-        CREATE OR REPLACE TRIGGER horasCorrectasActividades
-            BEFORE INSERT OR UPDATE ON ActividadesTuristicas
-            FOR EACH ROW
-        BEGIN
-            IF :new.HoraInicio >= :new.HoraFin THEN
-                raise_application_error(-20600, :new.HoraInicio || :new.HoraFin || ' La hora de inicio debe ser anterior a la hora de fin');
+            IF :new.FechaHoraInicio > :new.FechaHoraFin THEN
+                raise_application_error(-20600, :new.FechaHoraInicio || :new.FechaHoraFin || ' La fecha y hora de inicio debe ser anterior a la fecha y hora de fin');
             END IF;
         END;
     """)
@@ -251,7 +262,7 @@ def init_db():
     with open("clientes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Clientes values('{row[0]}', '{row[1]}','{row[2]}', '{row[3]}')")
+            cursor.execute(f"insert into Clientes values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')")
 
     with open("Reservas.csv", "r") as file:
         reader = csv.reader(file)
@@ -281,33 +292,29 @@ def init_db():
     with open("ActividadesTuristicas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}', '{row[7]}')")
+            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH:MI:SS AM'), TO_DATE('{row[4]}', 'DD/MM/RR HH:MI:SS AM'), '{row[5]}')")
 
     with open("Transportes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}')")
+            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH:MI:SS AM'), '{row[3]}', '{row[4]}', '{row[5]}')")
 
     with open("Alojamientos.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Alojamientos values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}', '{row[6]}')")
+            cursor.execute(f"insert into Alojamientos values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR'), TO_DATE('{row[4]}', 'DD/MM/RR'), '{row[5]}', '{row[6]}')")
 
-def get_db():
-    global connection, cursor
-    if 'db' not in g:
-        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
-        g.db = oracledb.connect(params=cp)
-        
-        if cursor == 'None': 
-            cursor = connection.cursor()
-        else:
-            return cursor
 
-def close_db():
-    global connection, cursor
-    cursor.close()
-    connection.close()
+@click.command('init-db')
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    init_db()
+    click.echo('Initialized the database.')
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 
 #def mostrarContenidoTablas(nombreTabla):
