@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <div class="worker-info">
+      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
+      <h2>
+        John Doe
+      </h2>
+      <p>
+        <strong>User:</strong> johndoe
+      </p>
+      <p>
+        <strong>Email:</strong> doe@john.com
+      </p>
+      <p>
+        <strong>Role:</strong> Admin
+      </p>
+      <button>LOGOUT</button>
+    </div>
+    
+    <div class="options-grid">
+      <a href="{{ url_for('insert_client') }}" class="people-button">Insertar cliente</a>
+      <a href="{{ url_for('delete_client') }}" class="services-button">Eliminar cliente</a>
+      <a class="people-button"></a>
+      <a class="people-button"></a>
+    </div>
+  </div>
+{% endblock %}
