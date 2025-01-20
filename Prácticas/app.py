@@ -31,7 +31,7 @@ def transports():
         
         db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
         db.execute(
-            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
+            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{'01/05/25 10:30'}', 'DD/MM/RR HH24:MI'), '{compania}', '{origen}', '{destino}')"
         )
         db.execute("commit")
     
