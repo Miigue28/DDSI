@@ -5,35 +5,27 @@ import csv
 from flask import g
 
 # Global Variables
-cursor = None
 connection = None
 
 def get_db():
-    global cursor
     if 'db' not in g:
         cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
         g.db = oracledb.connect(params=cp)
 
         click.echo('Conexión extablecida')
 
-        if cursor == None:
-            cursor = g.db.cursor()
+    return g.db.cursor()
 
 
 def close_db(e=None):
-    global cursor
-    
-    if cursor is not None:
-        cursor.close()
-
-    db = g.pop('db',None)
+    db = g.pop('db', None)
 
     if db is not None:
         db.close()
 
 def init_db():
 
-    get_db()
+    cursor = get_db()
 
     # Borramos las tablas existentes
     cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'EMPLEADOS'")

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, flash, redirect, url_for
+from db import get_db, init_db
 
 # Create and configure the app
 app = Flask(__name__, instance_relative_config=True)
@@ -14,7 +15,11 @@ def services():
 
 @app.route('/transports')
 def transports():
-    return render_template('transports.html')
+    db = get_db()
+    transports = db.execute(
+        """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('transports.html',transports=transports)
 
 @app.route('/reservations')
 def reservation():
@@ -52,6 +57,7 @@ def activities():
 
 import db
 db.init_app(app)
+
 
 #from . import auth
 #app.register_blueprint(auth.bp)
