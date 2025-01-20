@@ -22,7 +22,6 @@ def transports():
         tipo = request.form['type']
         fecha = request.form['date']
         fecha = fecha.replace("T", " ")
-        print(f"Fecha: {fecha}")
         origen = request.form['origin']
         destino = request.form['destination']
         plazasTotales= request.form['total_seats']
@@ -40,7 +39,6 @@ def transports():
         else:
             db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
             db.execute(
-                # TODO: FECHA
                 f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
             )
             db.execute("commit")
@@ -104,9 +102,42 @@ def accomodations():
 
     return render_template('accomodations.html',accomodations=accomodations)
 
-@app.route('/activities')
+@app.route('/activities', methods=['GET', 'POST'])
 def activities():
-    return render_template('activities.html')
+    db = get_db()
+    if request.method == 'POST':
+        codigo = request.form['code']
+        nombre = request.form['name']
+        tipo = request.form['type']
+        ubicacion = request.form['location']
+        fechaInicio = request.form['start date']
+        fechaInicio = fechaInicio.replace("T", " ")
+        fechaFin = request.form['end date']
+        fechaFin = fechaFin.replace("T", " ")
+        plazasTotales= request.form['total_seats']
+        plazasLibres = request.form['available_seats']
+        precio = request.form['price']
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Servicios where cServicio='{codigo}'
+        """).fetchone()[0] > 0:
+            error = 'Código de actividad ya existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+            db.execute(
+                f"insert into ActividadesTuristicas values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaInicio}', 'YYYY-MM-DD HH24:MI'), TO_DATE('{fechaFin}', 'YYYY-MM-DD HH24:MI'), '{ubicacion}')"
+            )
+            db.execute("commit")
+    
+    activities = db.execute(
+        """SELECT * FROM ActividadesTuristicas NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+
+    return render_template('activities.html',activities=activities)
 
 import db
 db.init_app(app)
