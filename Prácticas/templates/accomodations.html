@@ -39,7 +39,7 @@
         <h2>Insertar Alojamiento</h2>
         <form method="post">
             <label>Código:</label>
-            <input type="text" name="code" value="{{ request.form['code'] }}" required>
+            <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
             <label>Nombre:</label>
             <input type="text" name="name" value="{{ request.form['name'] }}" required>
             <label>Tipo:</label>
@@ -53,11 +53,11 @@
             <label>Teléfono:</label>
             <input type="text" name="phone number" value="{{ request.form['phone number'] }}" required>
             <label>Plazas totales:</label>
-            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}" required/>
+            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}" required>
             <label>Plazas libres:</label>
-            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}" required/>
+            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}" required>
             <label>Precio:</label>
-            <input type="number" name="price" value="{{ request.form['price'] }}" required/>
+            <input type="number" name="price" value="{{ request.form['price'] }}" required>
             <input type="submit" class="form-button" value="Guardar">
         </form>
     </div>

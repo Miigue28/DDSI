@@ -37,7 +37,7 @@
         <h2>Insertar Transporte</h2>
         <form method="post">
             <label>Código:</label>
-            <input type="text" name="code" value="{{ request.form['code'] }}" required>
+            <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
             <label>Compañía:</label>
             <input type="text" name="company" value="{{ request.form['company'] }}" required>
             <label>Tipo:</label>
