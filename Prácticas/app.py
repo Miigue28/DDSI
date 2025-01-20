@@ -55,21 +55,33 @@ def reservation():
 
 @app.route('/clients', methods=['GET', 'POST'])
 def clients():
-    #if request.method == 'POST':
-    #    dni = request.form['dni']
-    #    name = request.form['name']
-    #    surnames = request.form['surnames']
-    #    email = request.form['email']
-    #    
-    #    db = get_db()
-    #    db.execute(
-    #        'INSERT INTO post (title, body, author_id)'
-    #        ' VALUES (?, ?, ?)',
-    #        (dni, name, surnames, email)
-    #    )
-    #    db.commit()
-    #    return redirect(url_for('clients'))
-    return render_template('clients.html')
+    db = get_db()
+    if request.method == 'POST':
+        dni = request.form['dni']
+        name = request.form['name']
+        surname = request.form['surname']
+        email = request.form['email']
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Clientes where DNI='{dni}'
+        """).fetchone()[0] > 0:
+            error = 'Cliente ya existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"""
+                INSERT INTO Clientes 
+                VALUES('{dni}', '{name}', '{surname}', '{email}')
+            """)
+            db.execute("COMMIT")
+    
+    clients = db.execute("""
+        SELECT * FROM Clientes
+    """).fetchall()
+
+    return render_template('clients.html', clients=clients)
 
 @app.route('/employees')
 def employees():
@@ -89,12 +101,21 @@ def accomodations():
         plazasTotales= request.form['total_seats']
         plazasLibres = request.form['available_seats']
         precio = request.form['price']
-        
-        db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
-        db.execute(
-            f"insert into Alojamientos values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), '{ubicacion}', '{telefono}')"
-        )
-        db.execute("commit")
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Servicios where cServicio='{codigo}'
+        """).fetchone()[0] > 0:
+            error = 'Código de alojamiento ya existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+            db.execute(
+                f"insert into Alojamientos values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), '{ubicacion}', '{telefono}')"
+            )
+            db.execute("commit")
     
     accomodations = db.execute(
         """SELECT * FROM Alojamientos NATURAL JOIN (SELECT * FROM Servicios)"""
