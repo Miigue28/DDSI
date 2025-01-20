@@ -83,9 +83,42 @@ def clients():
 
     return render_template('clients.html', clients=clients)
 
-@app.route('/employees')
+@app.route('/employees',methods=['GET', 'POST'])
 def employees():
-    return render_template('employees.html')
+    db = get_db()
+    if request.method == 'POST':
+        codigo = request.form['code']
+        dni = request.form['dni']
+        nombre = request.form['name']
+        apellidos = request.form['surnames']
+        correo = request.form['email']
+        puesto = request.form['position']
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Empleados where DNI='{dni}'
+        """).fetchone()[0] > 0:
+            error = 'Empleado ya existente'
+
+        if db.execute(f"""
+            SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
+        """).fetchone()[0] == 0:
+            error = 'Puesto no existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"""
+                INSERT INTO Empleados 
+                VALUES('{codigo}', '{nombre}', '{apellidos}', '{dni}', '{correo}', '{puesto}')
+            """)
+            db.execute("COMMIT")
+    
+    employees = db.execute("""
+        SELECT * FROM Empleados NATURAL JOIN (SELECT * FROM PuestoSueldo)
+    """).fetchall()
+
+    return render_template('employees.html', employees=employees)
 
 @app.route('/accomodations', methods=['GET', 'POST'])
 def accomodations():
