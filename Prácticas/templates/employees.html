@@ -5,49 +5,45 @@
     <div class="show-database-content">
         <table class="services-table">
             <tr>
+              <th>Puesto</th>
               <th>Código</th>
               <th>Nombre</th>
               <th>Apellidos</th>
               <th>DNI</th>
               <th>Correo electrónico</th>
-              <th>Puesto</th>
+              <th>Sueldo</th>
             </tr>
-            <!-- 
+            
             {% for employee in employees %}
-                </tr>
-                <td>{{ employee['code'] }}</td>
-                <td>{{ employee['name'] }}</td>
-                <td>{{ employee['surnames'] }}</td>
-                <td>{{ employee['ID'] }}</td>
-                <td>{{ employee['email'] }}</td>
-                <td>{{ employee['position'] }}</td>
                 <tr>
+                <td>{{ employee[0] }}</td>
+                <td>{{ employee[1] }}</td>
+                <td>{{ employee[2] }}</td>
+                <td>{{ employee[3] }}</td>
+                <td>{{ employee[4] }}</td>
+                <td>{{ employee[5] }}</td>
+                <td>{{ employee[6] }}</td>
+                </tr>
             {% endfor %} 
-            -->
-            <tr>
-                <td>1</td>
-                <td>Manuel</td>
-                <td>Enríquez Ledesma</td>
-                <td>12345678B</td>
-                <td>manuelel@gmail.com</td>
-                <td>Director</td>
-            <tr>
+            
           </table>
     </div>
     
     <div class="form-container">
         <h2>Insertar Empleado</h2>
-        <form action="/guardar_tupla" method="post">
+        <form method="post">
+            <label>Código:</label>
+            <input type="text" name="code" value="{{ request.form['code'] }}" required>
             <label>Nombre:</label>
-            <input type="text" name="name" required>
+            <input type="text" name="name" value="{{ request.form['name'] }}" required>
             <label>Apellido:</label>
-            <input type="text" name="surnames" required>
+            <input type="text" name="surnames" value="{{ request.form['surnames'] }}" required>
             <label>DNI:</label>
-            <input type="text" name="dni" required>
+            <input type="text" name="dni" value="{{ request.form['dni'] }}" required>
             <label>Correo electrónico:</label>
-            <input type="text" name="email" required>
+            <input type="text" name="email" value="{{ request.form['email'] }}" required>
             <label>Puesto:</label>
-            <input type="text" name="position" required>
+            <input type="text" name="position" value="{{ request.form['position'] }}" required>
 
             <input type="submit" class="form-button" value="Guardar">
         </form>

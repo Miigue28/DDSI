@@ -5,35 +5,27 @@ import csv
 from flask import g
 
 # Global Variables
-cursor = None
 connection = None
 
 def get_db():
-    global cursor
     if 'db' not in g:
         cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
         g.db = oracledb.connect(params=cp)
 
         click.echo('Conexión extablecida')
 
-        if cursor == None:
-            cursor = g.db.cursor()
+    return g.db.cursor()
 
 
 def close_db(e=None):
-    global cursor
-    
-    if cursor is not None:
-        cursor.close()
-
-    db = g.pop('db',None)
+    db = g.pop('db', None)
 
     if db is not None:
         db.close()
 
 def init_db():
 
-    get_db()
+    cursor = get_db()
 
     # Borramos las tablas existentes
     cursor.execute(f"select count(*) from user_tables where upper(table_name) = 'EMPLEADOS'")
@@ -142,7 +134,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE ActividadesTuristicas (
             cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
-            Nombre REFERENCES NombreDescripcion(Nombre),
+            Nombre VARCHAR(50),
             Tipo VARCHAR(20),
             FechaHoraInicio DATE,
             FechaHoraFin DATE,
@@ -291,22 +283,16 @@ def init_db():
             cursor.execute(f"insert into Asociado values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("NombreDescripcion.csv", "r") as file:
-        reader = csv.reader(file)
-        for row in reader:
-            cursor.execute(f"insert into NombreDescripcion values('{row[0]}', '{row[1]}')")
-            cursor.execute("commit")
-
     with open("ActividadesTuristicas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH:MI:SS AM'), TO_DATE('{row[4]}', 'DD/MM/RR HH:MI:SS AM'), '{row[5]}')")
+            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH24:MI'), TO_DATE('{row[4]}', 'DD/MM/RR HH24:MI'), '{row[5]}')")
             cursor.execute("commit")
 
     with open("Transportes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH:MI:SS AM'), '{row[3]}', '{row[4]}', '{row[5]}')")
+            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH24:MI'), '{row[3]}', '{row[4]}', '{row[5]}')")
             cursor.execute("commit")
 
     with open("Alojamientos.csv", "r") as file:
