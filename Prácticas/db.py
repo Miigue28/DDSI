@@ -292,13 +292,16 @@ def init_db():
     with open("ActividadesTuristicas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH:MI:SS AM'), TO_DATE('{row[4]}', 'DD/MM/RR HH:MI:SS AM'), '{row[5]}')")
+            cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH24:MI'), TO_DATE('{row[4]}', 'DD/MM/RR HH24:MI'), '{row[5]}')")
             cursor.execute("commit")
+
+    for r in cursor.execute(f"select * from ActividadesTuristicas"):
+            print(f"{r[3]}, {r[4]}")
 
     with open("Transportes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
-            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH:MI:SS AM'), '{row[3]}', '{row[4]}', '{row[5]}')")
+            cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH24:MI'), '{row[3]}', '{row[4]}', '{row[5]}')")
             cursor.execute("commit")
 
     with open("Alojamientos.csv", "r") as file:

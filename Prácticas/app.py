@@ -13,12 +13,30 @@ def index():
 def services():
     return render_template('services.html')
 
-@app.route('/transports')
+@app.route('/transports', methods=['GET', 'POST'])
 def transports():
     db = get_db()
+    if request.method == 'POST':
+        codigo = request.form['code']
+        compania = request.form['company']
+        tipo = request.form['type']
+        fecha = request.form['date']
+        origen = request.form['origin']
+        destino = request.form['destination']
+        plazasTotales= request.form['total_seats']
+        plazasLibres = request.form['available_seats']
+        precio = request.form['price']
+        
+        db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+        db.execute(
+            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{'01/05/25 10:30'}', 'DD/MM/RR HH24:MI'), '{compania}', '{origen}', '{destino}')"
+        )
+        db.execute("commit")
+    
     transports = db.execute(
         """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
     ).fetchall()
+
     return render_template('transports.html',transports=transports)
 
 @app.route('/reservations')

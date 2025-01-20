@@ -30,30 +30,30 @@
                 </tr>
             {% endfor %} 
             
-
           </table>
     </div>
     
     <div class="form-container">
         <h2>Insertar Transporte</h2>
-        <form action="/guardar_tupla" method="post">
+        <form method="post">
+            <label>Código:</label>
+            <input type="text" name="code" value="{{ request.form['code'] }}" required>
             <label>Compañía:</label>
-            <input type="text" name="company" required>
+            <input type="text" name="company" value="{{ request.form['company'] }}" required>
             <label>Tipo:</label>
-            <input type="text" name="type" required>
+            <input type="text" name="type" value="{{ request.form['type'] }}" required>
             <label>Fecha:</label>
-            <input type="date" name="date" required>
-            <label>Hora:</label>
-            <input type="time" name="time" required>
+            <input type="datetime-local" name="date" value="{{ request.form['date'] }}" required>
             <label>Origen:</label>
-            <input type="text" name="origin" required>
+            <input type="text" name="origin" value="{{ request.form['origin'] }}" required>
             <label>Destino:</label>
-            <input type="text" name="destination" required>
+            <input type="text" name="destination" value="{{ request.form['destination'] }}" required>
             <label>Plazas totales:</label>
-            <input type="number" name="total_seats" min="0" max="100" required/>
+            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}" required/>
             <label>Plazas libres:</label>
-            <input type="number" name="available_seats" min="0" max="100" required/>
-
+            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}" required/>
+            <label>Precio:</label>
+            <input type="number" name="price" value="{{ request.form['price'] }}" required/>
             <input type="submit" class="form-button" value="Guardar">
         </form>
     </div>
