@@ -21,6 +21,8 @@ def transports():
         compania = request.form['company']
         tipo = request.form['type']
         fecha = request.form['date']
+        fecha = fecha.replace("T", " ")
+        print(f"Fecha: {fecha}")
         origen = request.form['origin']
         destino = request.form['destination']
         plazasTotales= request.form['total_seats']
@@ -29,7 +31,7 @@ def transports():
         
         db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
         db.execute(
-            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{'01/05/25 10:30'}', 'DD/MM/RR HH24:MI'), '{compania}', '{origen}', '{destino}')"
+            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
         )
         db.execute("commit")
     
@@ -65,9 +67,32 @@ def clients():
 def employees():
     return render_template('employees.html')
 
-@app.route('/accomodations')
+@app.route('/accomodations', methods=['GET', 'POST'])
 def accomodations():
-    return render_template('accomodations.html')
+    db = get_db()
+    if request.method == 'POST':
+        codigo = request.form['code']
+        nombre = request.form['name']
+        tipo = request.form['type']
+        ubicacion = request.form['location']
+        fechaEntrada = request.form['entry date']
+        fechaSalida = request.form['departure date']
+        telefono = request.form['phone number']
+        plazasTotales= request.form['total_seats']
+        plazasLibres = request.form['available_seats']
+        precio = request.form['price']
+        
+        db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+        db.execute(
+            f"insert into Alojamientos values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), '{ubicacion}', '{telefono}')"
+        )
+        db.execute("commit")
+    
+    accomodations = db.execute(
+        """SELECT * FROM Alojamientos NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+
+    return render_template('accomodations.html',accomodations=accomodations)
 
 @app.route('/activities')
 def activities():
