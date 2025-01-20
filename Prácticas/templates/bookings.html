@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="services-grid">
+    <div class="show-database-content">
+        <iframe id="contentFrame" src="table_bookings"></iframe>
+
+    </div>
+
+    <div class="form-container">
+        <h2>Insertar Reserva</h2>
+        <form action="/guardar_tupla" method="post">
+            <label>DNI:</label>
+            <input type="text" name="dni" required>
+            <label>Código servicio:</label>
+            <input type="text" name="service code" required>
+
+            <input type="submit" class="form-button" value="Guardar">
+        </form>
+    </div>
+
+    <div>
+        <button onclick="changeIframe('table_bookings')">Reservas</button>
+        <button onclick="changeIframe('table_activities_bookings')">Actividades</button>
+        <button onclick="changeIframe('table_transports_bookings')">Transportes</button>
+        <button onclick="changeIframe('table_accomodations_bookings')">Alojamientos</button>
+    </div>
+    <script>
+        function changeIframe(url) {
+            const iframe = document.getElementById("contentFrame");
+            iframe.src = url; // Cambia dinámicamente la URL del iframe
+        }
+    </script>
+</div>
+
+{% endblock %}
