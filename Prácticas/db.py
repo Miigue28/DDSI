@@ -134,7 +134,7 @@ def init_db():
     cursor.execute("""
         CREATE TABLE ActividadesTuristicas (
             cServicio REFERENCES Servicios(cServicio) PRIMARY KEY,
-            Nombre REFERENCES NombreDescripcion(Nombre),
+            Nombre VARCHAR(50),
             Tipo VARCHAR(20),
             FechaHoraInicio DATE,
             FechaHoraFin DATE,
@@ -283,20 +283,11 @@ def init_db():
             cursor.execute(f"insert into Asociado values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("NombreDescripcion.csv", "r") as file:
-        reader = csv.reader(file)
-        for row in reader:
-            cursor.execute(f"insert into NombreDescripcion values('{row[0]}', '{row[1]}')")
-            cursor.execute("commit")
-
     with open("ActividadesTuristicas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH24:MI'), TO_DATE('{row[4]}', 'DD/MM/RR HH24:MI'), '{row[5]}')")
             cursor.execute("commit")
-
-    for r in cursor.execute(f"select * from ActividadesTuristicas"):
-            print(f"{r[3]}, {r[4]}")
 
     with open("Transportes.csv", "r") as file:
         reader = csv.reader(file)
