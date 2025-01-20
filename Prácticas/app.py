@@ -193,6 +193,38 @@ def activities():
 
     return render_template('activities.html',activities=activities)
 
+@app.route('/bookings')
+def bookings():
+    return render_template('bookings.html')
+
+@app.route('/table_bookings')
+def table_bookings():
+    return render_template('table_bookings.html')
+
+@app.route('/table_transports_bookings')
+def table_transports_bookings():
+    return render_template('table_transports_bookings.html')
+
+@app.route('/table_activities_bookings')
+def table_activities_bookings():
+    return render_template('table_activities_bookings.html')
+
+@app.route('/table_accomodations_bookings')
+def table_accomodations_bookings():
+    return render_template('table_accomodations_bookings.html')
+
+@app.route('/client_options')
+def client_options():
+    return render_template('client_options.html')
+
+@app.route('/insert_client')
+def insert_client():
+    return render_template('insert_client.html')
+
+@app.route('/delete_client')
+def delete_client():
+    return render_template('delete_client.html')
+
 import db
 db.init_app(app)
 
