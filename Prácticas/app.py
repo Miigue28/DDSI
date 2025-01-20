@@ -28,12 +28,22 @@ def transports():
         plazasTotales= request.form['total_seats']
         plazasLibres = request.form['available_seats']
         precio = request.form['price']
-        
-        db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
-        db.execute(
-            f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{'01/05/25 10:30'}', 'DD/MM/RR HH24:MI'), '{compania}', '{origen}', '{destino}')"
-        )
-        db.execute("commit")
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Servicios where cServicio='{codigo}'
+        """).fetchone()[0] > 0:
+            error = 'Código de transporte ya existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+            db.execute(
+                # TODO: FECHA
+                f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
+            )
+            db.execute("commit")
     
     transports = db.execute(
         """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
