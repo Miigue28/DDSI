@@ -1,18 +1,20 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
 <table class="services-table">
     <tr>
+        <th>Código de Reserva</th>
+        <th>Precio</th>
         <th>DNI</th>
-        <th>Código servicio</th>
+        <th>Código de Servicio</th>
     </tr>
-    <!-- 
-            {% for transport in transports %}
-                </tr>
-                <td>{{ booking['dni'] }}</td>
-                <td>{{ booking['service_code']}}</td>
-                <tr>
-            {% endfor %} 
-            -->
-    <tr>
-        <td>1892929DOS</td>
-        <td>13457861234</td>
-    <tr>
+    {% for booking in bookings %}
+        <tr>
+        <td>{{ booking[0] }}</td>
+        <td>{{ booking[1] }}</td>
+        <td>{{ booking[2] }}</td>
+        <td>{{ booking[3] }}</td>
+        </tr>
+    {% endfor %}
 </table>
+{% endblock %}

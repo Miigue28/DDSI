@@ -193,25 +193,126 @@ def activities():
 
     return render_template('activities.html',activities=activities)
 
-@app.route('/bookings')
+@app.route('/bookings', methods=['GET', 'POST'])
 def bookings():
-    return render_template('bookings.html')
+    db = get_db()
+    reservation = ''
+    dni = ''
+    service = ''
 
-@app.route('/table_bookings')
+    if request.method == 'POST':
+        reservation = request.form['reservation']
+        dni = request.form['dni']
+        service = request.form['service']
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Servicios where cServicio='{service}'
+        """).fetchone()[0] == 0:
+            error = 'Código de servicio no existente'
+
+        if db.execute(f"""
+            SELECT count(*) FROM Clientes where DNI='{dni}'
+        """).fetchone()[0] == 0:
+            error = 'Cliente no existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            price = db.execute(f"""
+                SELECT Precio FROM Servicios WHERE cServicio='{service}'
+            """).fetchone()[0]
+
+            # Insertamos la reserva
+            db.execute(f"""
+                INSERT INTO Reservas VALUES ('{reservation}', '{price}')       
+            """)
+            db.execute(f"""
+                INSERT INTO TieneReserva VALUES ('{reservation}', '{dni}')           
+            """)
+            db.execute(f"""
+                INSERT INTO Asociado VALUES ('{reservation}', '{service}')           
+            """)
+    else:
+        # Capturar parámetros de consulta
+        reservation = request.args.get('reservation', default='', type=str)
+        dni = request.args.get('dni', default='', type=str)
+        service = request.args.get('service', default='', type=str)
+
+    bookings = db.execute("""
+    SELECT * FROM Reservas NATURAL JOIN (SELECT * FROM TieneReserva) NATURAL JOIN (SELECT * FROM Asociado)
+    """).fetchall()
+    return render_template('table_bookings.html', bookings=bookings, reservation=reservation, dni=dni, service=service)
+
+@app.route('/table_bookings', methods=['GET', 'POST'])
 def table_bookings():
-    return render_template('table_bookings.html')
+    db = get_db()
+
+    # Capturar parámetros de consulta
+    reservation = request.args.get('reservation', default='', type=str)
+    dni = request.args.get('dni', default='', type=str)
+    service = request.args.get('service', default='', type=str)
+
+    bookings = db.execute("""
+        SELECT * FROM Reservas NATURAL JOIN (SELECT * FROM TieneReserva) NATURAL JOIN (SELECT * FROM Asociado)
+    """).fetchall()
+    return render_template('table_bookings.html', bookings=bookings, reservation=reservation, dni=dni, service=service)
+
+@app.route('/table_clients_bookings')
+def table_clients_bookings():
+    db = get_db()
+
+    # Capturar parámetros de consulta
+    reservation = request.args.get('reservation', default='', type=str)
+    dni = request.args.get('dni', default='', type=str)
+    service = request.args.get('service', default='', type=str)
+
+    clients = db.execute("""
+        SELECT * FROM Clientes
+    """).fetchall()
+    return render_template('table_clients_bookings.html', clients=clients, reservation=reservation, dni=dni, service=service)
 
 @app.route('/table_transports_bookings')
 def table_transports_bookings():
-    return render_template('table_transports_bookings.html')
+    db = get_db()
+
+    # Capturar parámetros de consulta
+    reservation = request.args.get('reservation', default='', type=str)
+    dni = request.args.get('dni', default='', type=str)
+    service = request.args.get('service', default='', type=str)
+
+    transports = db.execute(
+        """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('table_transports_bookings.html', transports=transports, reservation=reservation, dni=dni, service=service)
 
 @app.route('/table_activities_bookings')
 def table_activities_bookings():
-    return render_template('table_activities_bookings.html')
+    db = get_db()
+
+    # Capturar parámetros de consulta
+    reservation = request.args.get('reservation', default='', type=str)
+    dni = request.args.get('dni', default='', type=str)
+    service = request.args.get('service', default='', type=str)
+
+    activities = db.execute(
+        """SELECT * FROM ActividadesTuristicas NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('table_activities_bookings.html', activities=activities, reservation=reservation, dni=dni, service=service)
 
 @app.route('/table_accomodations_bookings')
 def table_accomodations_bookings():
-    return render_template('table_accomodations_bookings.html')
+    db = get_db()
+
+    # Capturar parámetros de consulta
+    reservation = request.args.get('reservation', default='', type=str)
+    dni = request.args.get('dni', default='', type=str)
+    service = request.args.get('service', default='', type=str)
+
+    accomodations = db.execute(
+        """SELECT * FROM Alojamientos NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('table_accomodations_bookings.html', accomodations=accomodations, reservation=reservation, dni=dni, service=service)
 
 @app.route('/client_options')
 def client_options():

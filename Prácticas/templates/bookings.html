@@ -3,34 +3,27 @@
 {% block content %}
 <div class="services-grid">
     <div class="show-database-content">
-        <iframe id="contentFrame" src="table_bookings"></iframe>
-
+        {% block table %}{% endblock %}
     </div>
 
     <div class="form-container">
         <h2>Insertar Reserva</h2>
-        <form action="/guardar_tupla" method="post">
+        <form method="post" action="/bookings">
+            <label>Código de Reserva:</label>
+            <input type="text" id="reservation" name="reservation" value="{{ reservation or '' }}">
             <label>DNI:</label>
-            <input type="text" name="dni" required>
-            <label>Código servicio:</label>
-            <input type="text" name="service code" required>
+            <input type="text" id="dni" name="dni" value="{{ dni or '' }}">
+            <label>Código de servicio:</label>
+            <input type="text" id="service" name="service" value="{{ service or '' }}">
 
+            <input type="submit" formaction="{{ url_for('table_bookings') }}" formmethod="get" id="select-table-button" value="Reservas">
+            <input type="submit" formaction="{{ url_for('table_clients_bookings') }}" formmethod="get" id="select-table-button" value="Clientes">
+            <input type="submit" formaction="{{ url_for('table_activities_bookings') }}" formmethod="get" id="select-table-button" value="Actividades">
+            <input type="submit" formaction="{{ url_for('table_transports_bookings') }}" formmethod="get" id="select-table-button" value="Transportes">
+            <input type="submit" formaction="{{ url_for('table_accomodations_bookings') }}" formmethod="get" id="select-table-button" value="Alojamientos">
             <input type="submit" class="form-button" value="Guardar">
         </form>
     </div>
-
-    <div>
-        <button onclick="changeIframe('table_bookings')">Reservas</button>
-        <button onclick="changeIframe('table_activities_bookings')">Actividades</button>
-        <button onclick="changeIframe('table_transports_bookings')">Transportes</button>
-        <button onclick="changeIframe('table_accomodations_bookings')">Alojamientos</button>
-    </div>
-    <script>
-        function changeIframe(url) {
-            const iframe = document.getElementById("contentFrame");
-            iframe.src = url; // Cambia dinámicamente la URL del iframe
-        }
-    </script>
 </div>
 
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
+<table class="services-table">
+    <tr>
+      <th>DNI</th>
+      <th>Nombre</th>
+      <th>Apellidos</th>
+      <th>Correo electrónico</th>
+    </tr>
+    
+    {% for client in clients %}
+        </tr>
+        <td>{{ client[0] }}</td>
+        <td>{{ client[1] }}</td>
+        <td>{{ client[2] }}</td>
+        <td>{{ client[3] }}</td>
+        <tr>
+    {% endfor %}
+</table>
+{% endblock %}

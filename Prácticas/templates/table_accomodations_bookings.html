@@ -1,39 +1,33 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
 <table class="services-table">
     <tr>
-        <th>Código</th>
-        <th>Fecha de entrada</th>
-        <th>Fecha de salida</th>
-        <th>Nombre</th>
-        <th>Tipo</th>
-        <th>Ubicación</th>
-        <th>Teléfono</th>
-        <th>Plazas totales</th>
-        <th>Plazas disponibles</th>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Fecha de entrada</th>
+      <th>Fecha de salida</th>
+      <th>Ubicación</th>
+      <th>Teléfono</th>
+      <th>Precio</th>
+      <th>Plazas totales</th>
+      <th>Plazas disponibles</th>
     </tr>
-    <!-- 
-            {% for transport in transports %}
-                </tr>
-                <td>{{ accomodation['code'] }}</td>
-                <td>{{ accomodation['entry date'].strftime('%d/%m/%Y') }}</td>
-                <td>{{ accomodation['departure date'].strftime('%d/%m/%Y') }}</td>
-                <td>{{ accomodation['name'] }}</td>
-                <td>{{ accomodation['type'] }}</td>
-                <td>{{ accomodation['location'] }}</td>
-                <td>{{ accomodation['phone number'] }}</td>
-                <td>{{ accomodation['total_places'] }}</td>
-                <td>{{ accomodation['available_places'] }}</td>
-                <tr>
-            {% endfor %} 
-            -->
-    <tr>
-        <td>726351935E</td>
-        <td>01/05/2025</td>
-        <td>08/05/2025</td>
-        <td>Hotel Barceló</td>
-        <td>Hotel</td>
-        <td>Barcelona</td>
-        <td>612583639</td>
-        <td>100</td>
-        <td>30</td>
-    <tr>
+
+    {% for accomodation in accomodations %}
+        <tr>
+        <td>{{ accomodation[0] }}</td>
+        <td>{{ accomodation[1] }}</td>
+        <td>{{ accomodation[2] }}</td>
+        <td>{{ accomodation[3].strftime('%Y-%m-%d') }}</td>
+        <td>{{ accomodation[4].strftime('%Y-%m-%d') }}</td>
+        <td>{{ accomodation[5] }}</td>
+        <td>{{ accomodation[6] }}</td>
+        <td>{{ accomodation[7] }}</td>
+        <td>{{ accomodation[8] }}</td>
+        <td>{{ accomodation[9] }}</td>
+        </tr>
+    {% endfor %} 
 </table>
+{% endblock %}

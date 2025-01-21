@@ -1,39 +1,30 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
 <table class="services-table">
+  <tr>
+    <th>Código</th>
+    <th>Tipo</th>
+    <th>Fecha</th>
+    <th>Compañía</th>
+    <th>Origen</th>
+    <th>Destino</th>
+    <th>Precio</th>
+    <th>Plazas totales</th>
+    <th>Plazas disponibles</th>
+  </tr>
+  {% for transport in transports %}
     <tr>
-        <th>Código</th>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Compañía</th>
-        <th>Origen</th>
-        <th>Destino</th>
-        <th>Tipo</th>
-        <th>Plazas totales</th>
-        <th>Plazas disponibles</th>
+    <td>{{ transport[0] }}</td>
+    <td>{{ transport[1] }}</td>
+    <td>{{ transport[2] }}</td>
+    <td>{{ transport[3] }}</td>
+    <td>{{ transport[4] }}</td>
+    <td>{{ transport[5] }}</td>
+    <td>{{ transport[6] }}</td>
+    <td>{{ transport[7] }}</td>
+    <td>{{ transport[8] }}</td>
     </tr>
-    <!-- 
-            {% for transport in transports %}
-                </tr>
-                <td>{{ transport['code'] }}</td>
-                <td>{{ transport['date'].strftime('%d/%m/%Y') }}</td>
-                <td>{{ transport['time'].strftime('%h:%m:%s') }}</td>
-                <td>{{ transport['company'] }}</td>
-                <td>{{ transport['origin'] }}</td>
-                <td>{{ transport['destination'] }}</td>
-                <td>{{ transport['type'] }}</td>
-                <td>{{ transport['total_seats'] }}</td>
-                <td>{{ transport['available_seats'] }}</td>
-                <tr>
-            {% endfor %} 
-            -->
-    <tr>
-        <td>1892929DOS</td>
-        <td>01/05/2025</td>
-        <td>10:30:00</td>
-        <td>Air Europa</td>
-        <td>Madrid</td>
-        <td>Barcelona</td>
-        <td>Avión</td>
-        <td>100</td>
-        <td>50</td>
-    <tr>
+  {% endfor %}
 </table>
+{% endblock %}
