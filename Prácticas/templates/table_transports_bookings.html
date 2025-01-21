@@ -1,0 +1,30 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
+<table class="services-table">
+  <tr>
+    <th>Código</th>
+    <th>Tipo</th>
+    <th>Fecha</th>
+    <th>Compañía</th>
+    <th>Origen</th>
+    <th>Destino</th>
+    <th>Precio</th>
+    <th>Plazas totales</th>
+    <th>Plazas disponibles</th>
+  </tr>
+  {% for transport in transports %}
+    <tr>
+    <td>{{ transport[0] }}</td>
+    <td>{{ transport[1] }}</td>
+    <td>{{ transport[2] }}</td>
+    <td>{{ transport[3] }}</td>
+    <td>{{ transport[4] }}</td>
+    <td>{{ transport[5] }}</td>
+    <td>{{ transport[6] }}</td>
+    <td>{{ transport[7] }}</td>
+    <td>{{ transport[8] }}</td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

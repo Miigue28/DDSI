@@ -1,0 +1,31 @@
+{% extends 'bookings.html' %}
+
+{% block table %}
+<table class="services-table">
+    <tr>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Fecha de inicio</th>
+      <th>Fecha de fin</th>
+      <th>Ubicación</th>
+      <th>Precio</th>
+      <th>Plazas totales</th>
+      <th>Plazas disponibles</th>
+    </tr>
+
+    {% for activity in activities %}
+        <tr>
+        <td>{{ activity[0] }}</td>
+        <td>{{ activity[1] }}</td>
+        <td>{{ activity[2] }}</td>
+        <td>{{ activity[3] }}</td>
+        <td>{{ activity[4] }}</td>
+        <td>{{ activity[5] }}</td>
+        <td>{{ activity[6] }}</td>
+        <td>{{ activity[7] }}</td>
+        <td>{{ activity[8] }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
