@@ -1,52 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="services-grid">
-    <div class="show-database-content">
-        <table class="services-table">
-            <tr>
-              <th>Puesto</th>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Apellidos</th>
-              <th>DNI</th>
-              <th>Correo electrónico</th>
-              <th>Sueldo</th>
-            </tr>
-            
-            {% for employee in employees %}
-                <tr>
-                <td>{{ employee[0] }}</td>
-                <td>{{ employee[1] }}</td>
-                <td>{{ employee[2] }}</td>
-                <td>{{ employee[3] }}</td>
-                <td>{{ employee[4] }}</td>
-                <td>{{ employee[5] }}</td>
-                <td>{{ employee[6] }}</td>
-                </tr>
-            {% endfor %} 
-            
-          </table>
+<div class="dashboard-grid">
+    <div class="worker-info">
+      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
+      <h2>
+        John Doe
+      </h2>
+      <p>
+        <strong>User:</strong> johndoe
+      </p>
+      <p>
+        <strong>Email:</strong> doe@john.com
+      </p>
+      <p>
+        <strong>Role:</strong> Admin
+      </p>
+      <button>LOGOUT</button>
     </div>
     
-    <div class="form-container">
-        <h2>Insertar Empleado</h2>
-        <form method="post">
-            <label>Código:</label>
-            <input type="text" name="code" value="{{ request.form['code'] }}" required>
-            <label>Nombre:</label>
-            <input type="text" name="name" value="{{ request.form['name'] }}" required>
-            <label>Apellido:</label>
-            <input type="text" name="surnames" value="{{ request.form['surnames'] }}" required>
-            <label>DNI:</label>
-            <input type="text" name="dni" value="{{ request.form['dni'] }}" required>
-            <label>Correo electrónico:</label>
-            <input type="text" name="email" value="{{ request.form['email'] }}" required>
-            <label>Puesto:</label>
-            <input type="text" name="position" value="{{ request.form['position'] }}" required>
-
-            <input type="submit" class="form-button" value="Guardar">
-        </form>
+    <div class="options-grid">
+      <a href="{{ url_for('insert_employees') }}" class="people-button">Insertar empleado</a>
+      <a href="{{ url_for('delete_employees') }}" class="services-button">Eliminar empleado</a>
+      <a class="people-button"></a>
+      <a class="people-button"></a>
     </div>
-</div>
+  </div>
 {% endblock %}
+

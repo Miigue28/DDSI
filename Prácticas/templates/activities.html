@@ -1,60 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="services-grid">
-    <div class="show-database-content">
-        <table class="services-table">
-            <tr>
-              <th>Código</th>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Fecha de inicio</th>
-              <th>Fecha de fin</th>
-              <th>Ubicación</th>
-              <th>Precio</th>
-              <th>Plazas totales</th>
-              <th>Plazas disponibles</th>
-            </tr>
-        
-            {% for activity in activities %}
-                <tr>
-                <td>{{ activity[0] }}</td>
-                <td>{{ activity[1] }}</td>
-                <td>{{ activity[2] }}</td>
-                <td>{{ activity[3] }}</td>
-                <td>{{ activity[4] }}</td>
-                <td>{{ activity[5] }}</td>
-                <td>{{ activity[6] }}</td>
-                <td>{{ activity[7] }}</td>
-                <td>{{ activity[8] }}</td>
-                </tr>
-            {% endfor %}
-          </table>
+<div class="dashboard-grid">
+    <div class="worker-info">
+      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
+      <h2>
+        John Doe
+      </h2>
+      <p>
+        <strong>User:</strong> johndoe
+      </p>
+      <p>
+        <strong>Email:</strong> doe@john.com
+      </p>
+      <p>
+        <strong>Role:</strong> Admin
+      </p>
+      <button>LOGOUT</button>
     </div>
     
-    <div class="form-container">
-        <h2>Insertar Actividad Turística</h2>
-        <form method="post">
-            <label>Código:</label>
-            <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
-            <label>Nombre:</label>
-            <input type="text" name="name" value="{{ request.form['name'] }}" required>
-            <label>Tipo:</label>
-            <input type="text" name="type" value="{{ request.form['type'] }}" required>
-            <label>Ubicación:</label>
-            <input type="text" name="location" value="{{ request.form['location'] }}" required>
-            <label>Fecha de inicio:</label>
-            <input type="datetime-local" name="start date" value="{{ request.form['start date'] }}" required>
-            <label>Fecha de fin:</label>
-            <input type="datetime-local" name="end date" value="{{ request.form['end date'] }}" required>
-            <label>Plazas totales:</label>
-            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}" required/>
-            <label>Plazas libres:</label>
-            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}" required/>
-            <label>Precio:</label>
-            <input type="number" name="price" value="{{ request.form['price'] }}" required/>
-            <input type="submit" class="form-button" value="Guardar">
-        </form>
+    <div class="options-grid">
+      <a href="{{ url_for('insert_activities') }}" class="people-button">Insertar actividad</a>
+      <a href="{{ url_for('delete_activities') }}" class="services-button">Eliminar actividad</a>
+      <a href="{{ url_for('update_activities') }}" class="services-button">Modificar actividad</a>
+      <a class="people-button"></a>
     </div>
-</div>
+  </div>
 {% endblock %}
