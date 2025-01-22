@@ -15,86 +15,187 @@ def services():
 
 @app.route('/clients')
 def clients():
-    return render_template('clients.html')
-
-@app.route('/insert_clients', methods=['GET', 'POST'])
-def insert_clients():
     db = get_db()
-    if request.method == 'POST':
-        dni = request.form['dni']
-        name = request.form['name']
-        surname = request.form['surname']
-        email = request.form['email']
-        error = None
 
-        if db.execute(f"""
-            SELECT count(*) FROM Clientes where DNI='{dni}'
-        """).fetchone()[0] > 0:
-            error = 'Cliente ya existente'
-
-        if error is not None:
-            flash(error)
-        else:
-            db.execute(f"""
-                INSERT INTO Clientes 
-                VALUES('{dni}', '{name}', '{surname}', '{email}')
-            """)
-            db.execute("COMMIT")
-    
     clients = db.execute("""
         SELECT * FROM Clientes
     """).fetchall()
 
-    return render_template('insert_clients.html', clients=clients)
+    return render_template('clients.html', clients=clients)
 
-@app.route('/delete_clients')
-def delete_clients():
-    return render_template('delete_clients.html')
+@app.route('/clients/insert', methods=['POST'])
+def insert_client():
+    db = get_db()
+    error = None
+
+    dni = request.form['dni']
+    name = request.form['name']
+    surname = request.form['surname']
+    email = request.form['email']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Clientes where DNI='{dni}'
+    """).fetchone()[0] > 0:
+        error = 'Cliente ya existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"""
+            INSERT INTO Clientes VALUES('{dni}', '{name}', '{surname}', '{email}')
+        """)
+        db.execute("COMMIT")
+    
+    return redirect(url_for('clients'))
+
+@app.route('/clients/delete', methods=['POST'])
+def delete_client():
+    db = get_db()
+    error = None
+
+    dni = request.form['dni']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Clientes where DNI='{dni}'
+    """).fetchone()[0] == 0:
+        error = 'Cliente no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"DELETE FROM Clientes WHERE DNI='{dni}'")
+        db.execute("COMMIT")
+    
+    return redirect(url_for('clients'))
+
+@app.route('/clients/update', methods=['POST'])
+def update_client():
+    db = get_db()
+    error = None
+    
+    dni = request.form['dni']
+    nombre = request.form['name']
+    apellidos = request.form['surname']
+    email = request.form['email']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Clientes where DNI='{dni}'
+    """).fetchone()[0] == 0:
+        error = 'Cliente no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"""
+            UPDATE Clientes SET Nombre='{nombre}', Apellidos='{apellidos}', CorreoElectronico='{email}' WHERE DNI='{dni}'
+        """)
+        db.execute("COMMIT")
+
+    return redirect(url_for('clients'))
+
+@app.route('/clients/ask')
+def ask_client():
+    return render_template('ask_client.html')
 
 @app.route('/employees')
 def employees():
-    return render_template('employees.html')
-
-@app.route('/insert_employees',methods=['GET', 'POST'])
-def insert_employees():
     db = get_db()
-    if request.method == 'POST':
-        codigo = request.form['code']
-        dni = request.form['dni']
-        nombre = request.form['name']
-        apellidos = request.form['surnames']
-        correo = request.form['email']
-        puesto = request.form['position']
-        error = None
 
-        if db.execute(f"""
-            SELECT count(*) FROM Empleados where DNI='{dni}'
-        """).fetchone()[0] > 0:
-            error = 'Empleado ya existente'
-
-        if db.execute(f"""
-            SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
-        """).fetchone()[0] == 0:
-            error = 'Puesto no existente'
-
-        if error is not None:
-            flash(error)
-        else:
-            db.execute(f"""
-                INSERT INTO Empleados 
-                VALUES('{codigo}', '{nombre}', '{apellidos}', '{dni}', '{correo}', '{puesto}')
-            """)
-            db.execute("COMMIT")
-    
     employees = db.execute("""
         SELECT * FROM Empleados NATURAL JOIN (SELECT * FROM PuestoSueldo)
     """).fetchall()
 
-    return render_template('insert_employees.html', employees=employees)
+    return render_template('employees.html', employees=employees)
 
-@app.route('/delete_employees')
-def delete_employees():
-    return render_template('delete_employees.html')
+@app.route('/employees/insert', methods=['POST'])
+def insert_employee():
+    db = get_db()
+    error = None
+
+    codigo = request.form['code']
+    dni = request.form['dni']
+    nombre = request.form['name']
+    apellidos = request.form['surnames']
+    correo = request.form['email']
+    puesto = request.form['position']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Empleados where DNI='{dni}'
+    """).fetchone()[0] > 0:
+        error = 'Empleado ya existente'
+
+    if db.execute(f"""
+        SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
+    """).fetchone()[0] == 0:
+        error = 'Puesto no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"""
+            INSERT INTO Empleados 
+            VALUES('{codigo}', '{nombre}', '{apellidos}', '{dni}', '{correo}', '{puesto}')
+        """)
+        db.execute("COMMIT")
+
+    return redirect(url_for('employees'))
+
+@app.route('/employees/delete', methods=['POST'])
+def delete_employee():
+    db = get_db()
+    error = None
+
+    codigo = request.form['code']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Empleados where cEmpleado='{codigo}'
+    """).fetchone()[0] == 0:
+        error = 'Código de empleado no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"DELETE FROM Empleados WHERE cEmpleado='{codigo}'")
+        db.execute("COMMIT")
+    
+    return redirect(url_for('employees'))
+
+
+@app.route('/employees/update', methods=['POST'])
+def update_employee():
+    db = get_db()
+    error = None
+    
+    codigo = request.form['code']
+    dni = request.form['dni']
+    nombre = request.form['name']
+    apellidos = request.form['surnames']
+    correo = request.form['email']
+    puesto = request.form['position']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Empleados where DNI='{dni}'
+    """).fetchone()[0] == 0:
+        error = 'Empleado no existente'
+
+    if db.execute(f"""
+        SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
+    """).fetchone()[0] == 0:
+        error = 'Puesto no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"""
+            UPDATE Empleados SET Nombre='{nombre}', Apellidos='{apellidos}', DNI='{dni}', CorreoElectronico='{correo}', Puesto='{puesto}' WHERE cEmpleado='{codigo}'
+        """)
+        db.execute("COMMIT")
+
+    return redirect(url_for('employees'))
+
+@app.route('/employees/ask')
+def ask_employee():
+    return render_template('ask_employee.html')
 
 @app.route('/activities')
 def activities():
@@ -147,50 +248,54 @@ def update_activities():
 
 @app.route('/transports')
 def transports():
-    return render_template('transports.html')
-
-@app.route('/insert_transports', methods=['GET', 'POST'])
-def insert_transports():
     db = get_db()
-    if request.method == 'POST':
-        codigo = request.form['code']
-        compania = request.form['company']
-        tipo = request.form['type']
-        fecha = request.form['date']
-        fecha = fecha.replace("T", " ")
-        origen = request.form['origin']
-        destino = request.form['destination']
-        plazasTotales= request.form['total_seats']
-        plazasLibres = request.form['available_seats']
-        precio = request.form['price']
-        error = None
 
-        if db.execute(f"""
-            SELECT count(*) FROM Servicios where cServicio='{codigo}'
-        """).fetchone()[0] > 0:
-            error = 'Código de transporte ya existente'
+    transports = db.execute("""
+        SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)
+    """).fetchall()
 
-        if error is not None:
-            flash(error)
-        else:
-            db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
-            db.execute(
-                f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
-            )
-            db.execute("commit")
-    
-    transports = db.execute(
-        """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
-    ).fetchall()
+    return render_template('transports.html',transports=transports)
 
-    return render_template('insert_transports.html',transports=transports)
-
-@app.route('/transports/delete', methods=['POST'])
-def delete_transports():    
+@app.route('/transports/insert', methods=['POST'])
+def insert_transport():
     db = get_db()
+    error = None
 
     codigo = request.form['code']
+    compania = request.form['company']
+    tipo = request.form['type']
+    fecha = request.form['date']
+    fecha = fecha.replace("T", " ")
+    origen = request.form['origin']
+    destino = request.form['destination']
+    plazasTotales= request.form['total_seats']
+    plazasLibres = request.form['available_seats']
+    precio = request.form['price']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Servicios where cServicio='{codigo}'
+    """).fetchone()[0] > 0:
+        error = 'Código de transporte ya existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"""
+            INSERT INTO Servicios VALUES('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')
+        """)
+        db.execute(f"""
+            INSERT INT Transportes VALUES('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')
+        """)
+        db.execute("COMMIT")
+    
+    return redirect(url_for('transports'))
+
+@app.route('/transports/delete', methods=['POST'])
+def delete_transport():  
+    db = get_db()
     error = None
+
+    codigo = request.form['code']
 
     if db.execute(f"""
         SELECT count(*) FROM Servicios where cServicio='{codigo}'
@@ -204,15 +309,13 @@ def delete_transports():
         db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
         db.execute("COMMIT")
     
-    transports = db.execute(
-        """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
-    ).fetchall()
-
-    return render_template('insert_transports.html',transports=transports)
+    return redirect(url_for('transports'))
 
 @app.route('/transports/update', methods=['POST'])
-def update_transports():
+def update_transport():
     db = get_db()
+    error = None
+
     codigo = request.form['code']
     compania = request.form['company']
     tipo = request.form['type']
@@ -222,7 +325,6 @@ def update_transports():
     destino = request.form['destination']
     plazasTotales= request.form['total_seats']
     precio = request.form['price']
-    error = None
 
     if db.execute(f"""
         SELECT count(*) FROM Servicios where cServicio='{codigo}'
@@ -240,11 +342,7 @@ def update_transports():
         """)
         db.execute("COMMIT")
     
-    transports = db.execute("""
-        SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)
-    """).fetchall()
-
-    return render_template('insert_transports.html',transports=transports)
+    return redirect(url_for('transports'))
 
 @app.route('/accomodations')
 def accomodations():

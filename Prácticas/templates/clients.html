@@ -1,29 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="dashboard-grid">
-    <div class="worker-info">
-      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
-      <h2>
-        John Doe
-      </h2>
-      <p>
-        <strong>User:</strong> johndoe
-      </p>
-      <p>
-        <strong>Email:</strong> doe@john.com
-      </p>
-      <p>
-        <strong>Role:</strong> Admin
-      </p>
-      <button>LOGOUT</button>
-    </div>
-    
-    <div class="options-grid">
-      <a href="{{ url_for('insert_clients') }}" class="people-button">Insertar cliente</a>
-      <a href="{{ url_for('delete_clients') }}" class="services-button">Eliminar cliente</a>
-      <a class="people-button"></a>
-      <a class="people-button"></a>
-    </div>
+<div class="services-grid">
+  <div class="show-database-content">
+    <table class="services-table">
+      <tr>
+        <th>DNI</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Correo electrónico</th>
+      </tr>
+      
+      {% for client in clients %}
+        </tr>
+        <td>{{ client[0] }}</td>
+        <td>{{ client[1] }}</td>
+        <td>{{ client[2] }}</td>
+        <td>{{ client[3] }}</td>
+        <tr>
+      {% endfor %}
+    </table>
   </div>
+  
+  <div class="form-container">
+    <h2>Cliente</h2>
+    <form action="{{ url_for('insert_client') }}" method="post">
+      <label>DNI:</label>
+      <input type="text" name="dni" value="{{ request.form['dni'] }}" required>
+      <label>Nombre:</label>
+      <input type="text" name="name" value="{{ request.form['name'] }}">
+      <label>Apellidos:</label>
+      <input type="text" name="surname" value="{{ request.form['surname'] }}">
+      <label>Correo electrónico:</label>
+      <input type="text" name="email" value="{{ request.form['email'] }}">
+
+      <input type="submit" formaction="{{ url_for('update_client') }}" id="select-action-button" value="Modificar">
+      <input type="submit" formaction="{{ url_for('delete_client') }}" id="select-action-button" value="Eliminar">
+      <input type="submit" class="form-button" value="Insertar">
+    </form>
+  </div>
+</div>
 {% endblock %}
