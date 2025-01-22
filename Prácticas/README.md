@@ -1,5 +1,4 @@
-# Seminario 2: Acceso a bases de datos
-
+# Práctica 3
 ## Diseño y Desarrollo de Sistemas de Información
 
 ### Instalación
@@ -28,27 +27,14 @@ pip install -r requirements.txt
 > sudo apt-get install python3-venv
 > ```
 
-A continuación, construiremos el paquete de python mediante
+Ejecutamos la siguiente orden para inicializar nuestra base de datos:
 
 ```
-python3 -m build --wheel
+flask init-db
 ```
 
-Para posteriormente ejecutar un contenedor de Docker con la aplicación 
-
+Ejecutamos la aplicación:
 
 ```
-docker compose up
+python3 app.py
 ```
-
-### Roadmap
-
-- [ ] Conexión a la base de datos
-- [ ] Creación de tablas e inserción de tuplas
-- [ ] Gestión de disparadores
-- [ ] Diseño de la interfaz de usuario
-- [ ] Implementación de la interfaz de usuario
-- [ ] Diseño de funcionalidades del backend (formulario para dar de alta servicios y generar reservas)
-- [ ] Implementación del backend
-- [ ] Tests
-- [ ] Aspectos legales (identificar datos sensibles, incluir mensajes informando a los usuarios, trámites legales para el registro de la BD)

@@ -34,7 +34,7 @@
   
   <div class="form-container">
     <h2>Transportes</h2>
-    <form action="{{ url_for('insert_transport') }}" method="post">
+    <form action="{{ url_for('insert_transports') }}" method="post">
       <label>Código:</label>
       <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
       <label>Compañía:</label>
@@ -54,8 +54,8 @@
       <label>Precio:</label>
       <input type="number" name="price" value="{{ request.form['price'] }}"/>
 
-      <input type="submit" formaction="{{ url_for('update_transport') }}" id="select-action-button" value="Modificar">
-      <input type="submit" formaction="{{ url_for('delete_transport') }}" id="select-action-button" value="Eliminar">
+      <input type="submit" formaction="{{ url_for('update_transports') }}" id="select-action-button" value="Modificar">
+      <input type="submit" formaction="{{ url_for('delete_transports') }}" id="select-action-button" value="Eliminar">
       <input type="submit" class="form-button" value="Insertar">
     </form>
   </div>

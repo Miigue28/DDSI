@@ -120,9 +120,14 @@ def insert_employee():
     puesto = request.form['position']
 
     if db.execute(f"""
+        SELECT count(*) FROM Empleados where cEmpleado='{codigo}'
+    """).fetchone()[0] > 0:
+        error = 'Empleado con ese mismo DNI ya existente'
+
+    if db.execute(f"""
         SELECT count(*) FROM Empleados where DNI='{dni}'
     """).fetchone()[0] > 0:
-        error = 'Empleado ya existente'
+        error = 'Empleado con ese mismo DNI ya existente'
 
     if db.execute(f"""
         SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
@@ -174,9 +179,9 @@ def update_employee():
     puesto = request.form['position']
 
     if db.execute(f"""
-        SELECT count(*) FROM Empleados where DNI='{dni}'
+        SELECT count(*) FROM Empleados where cEmpleado='{codigo}'
     """).fetchone()[0] == 0:
-        error = 'Empleado no existente'
+        error = 'Código de empleado no existente'
 
     if db.execute(f"""
         SELECT count(*) FROM PuestoSueldo where Puesto='{puesto}'
@@ -255,8 +260,8 @@ def delete_activities():
     if error is not None:
         flash(error)
     else:
-        db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
         db.execute(f"DELETE FROM ActividadesTuristicas WHERE cServicio='{codigo}'")
+        db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
         db.execute("COMMIT")
 
     return redirect(url_for('activities'))
@@ -349,8 +354,8 @@ def delete_transports():
     if error is not None:
         flash(error)
     else:
-        db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
         db.execute(f"DELETE FROM Transportes WHERE cServicio='{codigo}'")
+        db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
         db.execute("COMMIT")
 
     return redirect (url_for('transports'))
@@ -397,6 +402,27 @@ def accomodations():
 
     return render_template('accomodations.html', accomodations=accomodations)
 
+@app.route('/accomodations/delete', methods=['POST'])
+def delete_accomodations():
+    db = get_db()
+    error = None
+    
+    codigo = request.form['code']
+
+    if db.execute(f"""
+        SELECT count(*) FROM Servicios where cServicio='{codigo}'
+    """).fetchone()[0] == 0:
+        error = 'Código de alojamiento no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"DELETE FROM Alojamientos WHERE cServicio = '{codigo}' ")
+        db.execute(f"DELETE FROM Servicios WHERE cServicio = '{codigo}' ")
+        db.execute("COMMIT")
+    
+    return redirect(url_for('accomodations'))
+
 @app.route('/accomodations/insert', methods=['POST'])
 def insert_accomodations():
     db = get_db()
@@ -431,27 +457,6 @@ def insert_accomodations():
 
     return redirect(url_for('accomodations'))
 
-@app.route('/accomodations/delete', methods=['POST'])
-def delete_accomodations():
-    db = get_db()
-    error = None
-    
-    codigo = request.form['code']
-
-    if db.execute(f"""
-        SELECT count(*) FROM Alojamientos where cServicio='{codigo}'
-    """).fetchone()[0] == 0:
-        error = 'Código de alojamiento no existente'
-
-    if error is not None:
-        flash(error)
-    else:
-        db.execute(f"DELETE FROM Servicios WHERE cServicio = '{codigo}' ")
-        db.execute(f"DELETE FROM Alojamientos WHERE cServicio = '{codigo}' ")
-        db.execute("COMMIT")
-    
-    return redirect(url_for('accomodations'))
-
 @app.route('/accomodations/update', methods=['POST'])
 def update_accomodations():
     db = get_db()
@@ -476,7 +481,7 @@ def update_accomodations():
         flash(error)
     else:            
         db.execute(f"UPDATE Servicios SET PlazasTotales = '{plazasTotales}', Precio = '{precio}' WHERE cServicio = '{codigo}'")  
-        db.execute(f"UPDATE Alojamientos SET Nombre = '{nombre}', Tipo = '{tipo}', Ubicacion = '{ubicacion}' FechaEntrada = TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), FechaSalida = TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), Telefono = '{telefono}' WHERE cServicio = '{codigo}'")
+        db.execute(f"UPDATE Alojamientos SET Nombre = '{nombre}', Tipo = '{tipo}', Ubicacion = '{ubicacion}', FechaEntrada = TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), FechaSalida = TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), Telefono = '{telefono}' WHERE cServicio = '{codigo}'")
         db.execute("COMMIT")
 
     return redirect(url_for('accomodations'))
@@ -540,7 +545,7 @@ def bookings():
                 db.execute(f"""
                     INSERT INTO Asociado VALUES ('{reservation}', '{service}')           
                 """)
-            db.execute("COMMIT");
+            db.execute("COMMIT")
     else:
         # Capturar parámetros de consulta
         reservation = request.args.get('reservation', default='', type=str)
