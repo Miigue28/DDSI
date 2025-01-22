@@ -1,29 +1,63 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="dashboard-grid">
-    <div class="worker-info">
-      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Empleado" class="avatar">
-      <h2>
-        John Doe
-      </h2>
-      <p>
-        <strong>User:</strong> johndoe
-      </p>
-      <p>
-        <strong>Email:</strong> doe@john.com
-      </p>
-      <p>
-        <strong>Role:</strong> Admin
-      </p>
-      <button>LOGOUT</button>
-    </div>
-    
-    <div class="options-grid">
-      <a href="{{ url_for('insert_transports') }}" class="people-button">Insertar transporte</a>
-      <a href="{{ url_for('delete_transports') }}" class="services-button">Eliminar transporte</a>
-      <a href="{{ url_for('update_transports') }}" class="services-button">Modificar transporte</a>
-      <a class="people-button"></a>
-    </div>
+<div class="services-grid">
+  <div class="show-database-content">
+    <table class="services-table">
+      <tr>
+        <th>Código</th>
+        <th>Tipo</th>
+        <th>Fecha</th>
+        <th>Compañía</th>
+        <th>Origen</th>
+        <th>Destino</th>
+        <th>Precio</th>
+        <th>Plazas totales</th>
+        <th>Plazas disponibles</th>
+      </tr>
+
+      {% for transport in transports %}
+        <tr>
+        <td>{{ transport[0] }}</td>
+        <td>{{ transport[1] }}</td>
+        <td>{{ transport[2] }}</td>
+        <td>{{ transport[3] }}</td>
+        <td>{{ transport[4] }}</td>
+        <td>{{ transport[5] }}</td>
+        <td>{{ transport[6] }}</td>
+        <td>{{ transport[7] }}</td>
+        <td>{{ transport[8] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
   </div>
+  
+  <div class="form-container">
+    <h2>Transportes</h2>
+    <form action="{{ url_for('insert_transport') }}" method="post">
+      <label>Código:</label>
+      <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
+      <label>Compañía:</label>
+      <input type="text" name="company" value="{{ request.form['company'] }}">
+      <label>Tipo:</label>
+      <input type="text" name="type" value="{{ request.form['type'] }}">
+      <label>Fecha:</label>
+      <input type="datetime-local" name="date" value="{{ request.form['date'] }}">
+      <label>Origen:</label>
+      <input type="text" name="origin" value="{{ request.form['origin'] }}">
+      <label>Destino:</label>
+      <input type="text" name="destination" value="{{ request.form['destination'] }}">
+      <label>Plazas totales:</label>
+      <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}"/>
+      <label>Plazas libres:</label>
+      <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}"/>
+      <label>Precio:</label>
+      <input type="number" name="price" value="{{ request.form['price'] }}"/>
+
+      <input type="submit" formaction="{{ url_for('update_transport') }}" id="select-action-button" value="Modificar">
+      <input type="submit" formaction="{{ url_for('delete_transport') }}" id="select-action-button" value="Eliminar">
+      <input type="submit" class="form-button" value="Insertar">
+    </form>
+  </div>
+</div>
 {% endblock %}
