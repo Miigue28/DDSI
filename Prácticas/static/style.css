@@ -269,10 +269,25 @@ iframe{
 
 .legal-conditions-grid {
   display: grid;
-  grid-template-rows: 175px 50px 50px;
+  grid-template-rows: 375px 50px 50px;
   gap: 10px;
   width: 500px;
-  height: 300px;
+  height: 500px;
+}
+
+.legal-conditions-grid h2 {
+  font-family: 'Pacifico', cursive;
+	font-size: 20pt;
+	font-weight: normal;
+  text-align: center;
+}
+
+.legal-conditions-grid p {
+  font-size: 10pt;
+}
+
+.legal-conditions-grid li {
+  font-size: 10pt;
 }
 
 .legal-conditions-grid button {
