@@ -167,7 +167,7 @@ def init_db():
     #Disparador para impedir que se inserte un sueldo negativo
     cursor.execute("""
         CREATE OR REPLACE TRIGGER sueldoNegativo
-            BEFORE INSERT OR UPDATE ON PuestoSueldo
+            BEFORE INSERT ON PuestoSueldo
             FOR EACH ROW
         BEGIN
             IF :new.Sueldo < 0 THEN
@@ -183,7 +183,7 @@ def init_db():
             FOR EACH ROW
         BEGIN
             IF :new.Precio < 0 THEN
-                raise_application_error(-20600, :new.Precio || ' El sueldo no puede ser negativo');
+                raise_application_error(-20600, :new.Precio || ' El precio no puede ser negativo');
             END IF;
         END;
     """)
