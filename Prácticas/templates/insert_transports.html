@@ -38,22 +38,25 @@
             <label>Código:</label>
             <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
             <label>Compañía:</label>
-            <input type="text" name="company" value="{{ request.form['company'] }}" required>
+            <input type="text" name="company" value="{{ request.form['company'] }}">
             <label>Tipo:</label>
-            <input type="text" name="type" value="{{ request.form['type'] }}" required>
+            <input type="text" name="type" value="{{ request.form['type'] }}">
             <label>Fecha:</label>
-            <input type="datetime-local" name="date" value="{{ request.form['date'] }}" required>
+            <input type="datetime-local" name="date" value="{{ request.form['date'] }}">
             <label>Origen:</label>
-            <input type="text" name="origin" value="{{ request.form['origin'] }}" required>
+            <input type="text" name="origin" value="{{ request.form['origin'] }}">
             <label>Destino:</label>
-            <input type="text" name="destination" value="{{ request.form['destination'] }}" required>
+            <input type="text" name="destination" value="{{ request.form['destination'] }}">
             <label>Plazas totales:</label>
-            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}" required/>
+            <input type="number" name="total_seats" min="0" max="100" value="{{ request.form['total_seats'] }}"/>
             <label>Plazas libres:</label>
-            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}" required/>
+            <input type="number" name="available_seats" min="0" max="100" value="{{ request.form['available_seats'] }}"/>
             <label>Precio:</label>
-            <input type="number" name="price" value="{{ request.form['price'] }}" required/>
-            <input type="submit" class="form-button" value="Guardar">
+            <input type="number" name="price" value="{{ request.form['price'] }}"/>
+
+            <input type="submit" formaction="{{ url_for('update_transports') }}" id="select-action-button" value="Modificar">
+            <input type="submit" formaction="{{ url_for('delete_transports') }}" id="select-action-button" value="Eliminar">
+            <input type="submit" class="form-button" value="Insertar">
         </form>
     </div>
 </div>

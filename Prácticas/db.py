@@ -241,61 +241,61 @@ def init_db():
     """)
 
     #Insertamos tuplas
-    with open("PuestoSueldo.csv", "r") as file:
+    with open("database/PuestoSueldo.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into PuestoSueldo values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("empleados.csv", "r") as file:
+    with open("database/empleados.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Empleados values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', '{row[5]}')")
             cursor.execute("commit")
 
-    with open("clientes.csv", "r") as file:
+    with open("database/clientes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Clientes values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')")
             cursor.execute("commit")
 
-    with open("Reservas.csv", "r") as file:
+    with open("database/Reservas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Reservas values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("TieneReserva.csv", "r") as file:
+    with open("database/TieneReserva.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into TieneReserva values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("servicios.csv", "r") as file:
+    with open("database/servicios.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Servicios values('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}')")
             cursor.execute("commit")
 
-    with open("Asociado.csv", "r") as file:
+    with open("database/Asociado.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Asociado values('{row[0]}', '{row[1]}')")
             cursor.execute("commit")
 
-    with open("ActividadesTuristicas.csv", "r") as file:
+    with open("database/ActividadesTuristicas.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into ActividadesTuristicas values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR HH24:MI'), TO_DATE('{row[4]}', 'DD/MM/RR HH24:MI'), '{row[5]}')")
             cursor.execute("commit")
 
-    with open("Transportes.csv", "r") as file:
+    with open("database/Transportes.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Transportes values('{row[0]}', '{row[1]}', TO_DATE('{row[2]}', 'DD/MM/RR HH24:MI'), '{row[3]}', '{row[4]}', '{row[5]}')")
             cursor.execute("commit")
 
-    with open("Alojamientos.csv", "r") as file:
+    with open("database/Alojamientos.csv", "r") as file:
         reader = csv.reader(file)
         for row in reader:
             cursor.execute(f"insert into Alojamientos values('{row[0]}', '{row[1]}', '{row[2]}', TO_DATE('{row[3]}', 'DD/MM/RR'), TO_DATE('{row[4]}', 'DD/MM/RR'), '{row[5]}', '{row[6]}')")

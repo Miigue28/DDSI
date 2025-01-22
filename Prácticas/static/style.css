@@ -222,7 +222,7 @@ iframe{
 
 .form-button {
   width: 100%;
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 10px;
   background-color: #007bff;
   color: #fff;
@@ -249,6 +249,23 @@ iframe{
   background-color: white;
   color: #cc2f2e;
 }
+
+#select-action-button {
+  display: inline-flex;
+  width: 245px;
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#select-action-button:hover {
+  background-color: #0056b3;
+}
+
 
 .flash {
   margin: 1em 0;

@@ -21,7 +21,9 @@
             <input type="submit" formaction="{{ url_for('table_activities_bookings') }}" formmethod="get" id="select-table-button" value="Actividades">
             <input type="submit" formaction="{{ url_for('table_transports_bookings') }}" formmethod="get" id="select-table-button" value="Transportes">
             <input type="submit" formaction="{{ url_for('table_accomodations_bookings') }}" formmethod="get" id="select-table-button" value="Alojamientos">
-            <input type="submit" class="form-button" value="Guardar">
+            
+            <input type="submit" formaction="{{ url_for('delete_reservation') }}" class="form-button" value="Eliminar">
+            <input type="submit" class="form-button" value="Insertar">
         </form>
     </div>
 </div>
