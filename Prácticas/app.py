@@ -287,6 +287,7 @@ def bookings():
             db.execute(f"""
                 INSERT INTO Asociado VALUES ('{reservation}', '{service}')           
             """)
+            db.execute("commit");
     else:
         # Capturar parámetros de consulta
         reservation = request.args.get('reservation', default='', type=str)
