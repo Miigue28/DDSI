@@ -199,9 +199,13 @@ def ask_employee():
 
 @app.route('/activities')
 def activities():
-    return render_template('activities.html')
+    db = get_db()
+    activities = db.execute(
+        """SELECT * FROM ActividadesTuristicas NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('activities.html', activities=activities)
 
-@app.route('/insert_activities', methods=['GET', 'POST'])
+@app.route('/activities/insert', methods=['POST'])
 def insert_activities():
     db = get_db()
     if request.method == 'POST':
@@ -231,71 +235,108 @@ def insert_activities():
                 f"insert into ActividadesTuristicas values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaInicio}', 'YYYY-MM-DD HH24:MI'), TO_DATE('{fechaFin}', 'YYYY-MM-DD HH24:MI'), '{ubicacion}')"
             )
             db.execute("commit")
-    
-    activities = db.execute(
-        """SELECT * FROM ActividadesTuristicas NATURAL JOIN (SELECT * FROM Servicios)"""
-    ).fetchall()
 
-    return render_template('insert_activities.html',activities=activities)
+    return redirect(url_for('activities'))
 
-@app.route('/<int:id>/delete', methods=('POST',))
+@app.route('/activities/delete', methods=['POST'])
 def delete_activities():    
-    return redirect(url_for(''))
-
-@app.route('/activities/update', methods=('GET', 'POST'))
-def update_activities():
-    return render_template('blog/update.html')
-
-@app.route('/transports')
-def transports():
     db = get_db()
-
-    transports = db.execute("""
-        SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)
-    """).fetchall()
-
-    return render_template('transports.html',transports=transports)
-
-@app.route('/transports/insert', methods=['POST'])
-def insert_transport():
-    db = get_db()
-    error = None
 
     codigo = request.form['code']
-    compania = request.form['company']
-    tipo = request.form['type']
-    fecha = request.form['date']
-    fecha = fecha.replace("T", " ")
-    origen = request.form['origin']
-    destino = request.form['destination']
-    plazasTotales= request.form['total_seats']
-    plazasLibres = request.form['available_seats']
-    precio = request.form['price']
+    error = None
 
     if db.execute(f"""
         SELECT count(*) FROM Servicios where cServicio='{codigo}'
-    """).fetchone()[0] > 0:
-        error = 'Código de transporte ya existente'
+    """).fetchone()[0] == 0:
+        error = 'Código de actividad no existente'
+
+    if error is not None:
+        flash(error)
+    else:
+        db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
+        db.execute(f"DELETE FROM ActividadesTuristicas WHERE cServicio='{codigo}'")
+        db.execute("COMMIT")
+
+    return redirect(url_for('activities'))
+
+@app.route('/activities/update', methods=['POST'])
+def update_activities():
+    db = get_db()
+    codigo = request.form['code']
+    nombre = request.form['name']
+    tipo = request.form['type']
+    ubicacion = request.form['location']
+    fechaInicio = request.form['start date']
+    fechaInicio = fechaInicio.replace("T", " ")
+    fechaFin = request.form['end date']
+    fechaFin = fechaFin.replace("T", " ")
+    plazasTotales= request.form['total_seats']
+    precio = request.form['price']
+    error = None
+
+    if db.execute(f"""
+        SELECT count(*) FROM Servicios where cServicio='{codigo}'
+    """).fetchone()[0] == 0:
+        error = 'Código de actividad no existente'
 
     if error is not None:
         flash(error)
     else:
         db.execute(f"""
-            INSERT INTO Servicios VALUES('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')
-        """)
+            UPDATE Servicios SET Precio='{precio}', PlazasTotales='{plazasTotales}' WHERE cServicio='{codigo}'""")
         db.execute(f"""
-            INSERT INT Transportes VALUES('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')
+            UPDATE ActividadesTuristicas SET Nombre='{nombre}', Tipo='{tipo}', Ubicacion='{ubicacion}', FechaHoraInicio=TO_DATE('{fechaInicio}', 'YYYY-MM-DD HH24:MI'), FechaHoraFin=TO_DATE('{fechaFin}', 'YYYY-MM-DD HH24:MI') WHERE cServicio='{codigo}'
         """)
-        db.execute("COMMIT")
-    
-    return redirect(url_for('transports'))
+        db.execute("commit")
+
+    return redirect(url_for('activities'))
+
+@app.route('/transports')
+def transports():
+    db = get_db()
+    transports = db.execute(
+        """SELECT * FROM Transportes NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
+    return render_template('transports.html', transports=transports)
+
+@app.route('/transports/insert', methods=['POST'])
+def insert_transports():
+    db = get_db()
+    if request.method == 'POST':
+        codigo = request.form['code']
+        compania = request.form['company']
+        tipo = request.form['type']
+        fecha = request.form['date']
+        fecha = fecha.replace("T", " ")
+        origen = request.form['origin']
+        destino = request.form['destination']
+        plazasTotales= request.form['total_seats']
+        plazasLibres = request.form['available_seats']
+        precio = request.form['price']
+        error = None
+
+        if db.execute(f"""
+            SELECT count(*) FROM Servicios where cServicio='{codigo}'
+        """).fetchone()[0] > 0:
+            error = 'Código de transporte ya existente'
+
+        if error is not None:
+            flash(error)
+        else:
+            db.execute(f"insert into Servicios values('{codigo}', '{precio}', '{plazasTotales}', '{plazasLibres}')")
+            db.execute(
+                f"insert into Transportes values('{codigo}', '{tipo}', TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), '{compania}', '{origen}', '{destino}')"
+            )
+            db.execute("commit")
+
+    return redirect (url_for('transports'))
 
 @app.route('/transports/delete', methods=['POST'])
-def delete_transport():  
+def delete_transports():    
     db = get_db()
-    error = None
 
     codigo = request.form['code']
+    error = None
 
     if db.execute(f"""
         SELECT count(*) FROM Servicios where cServicio='{codigo}'
@@ -305,17 +346,15 @@ def delete_transport():
     if error is not None:
         flash(error)
     else:
-        db.execute(f"DELETE FROM Transportes WHERE cServicio='{codigo}'")
         db.execute(f"DELETE FROM Servicios WHERE cServicio='{codigo}'")
+        db.execute(f"DELETE FROM Transportes WHERE cServicio='{codigo}'")
         db.execute("COMMIT")
-    
-    return redirect(url_for('transports'))
+
+    return redirect (url_for('transports'))
 
 @app.route('/transports/update', methods=['POST'])
-def update_transport():
+def update_transports():
     db = get_db()
-    error = None
-
     codigo = request.form['code']
     compania = request.form['company']
     tipo = request.form['type']
@@ -325,6 +364,7 @@ def update_transport():
     destino = request.form['destination']
     plazasTotales= request.form['total_seats']
     precio = request.form['price']
+    error = None
 
     if db.execute(f"""
         SELECT count(*) FROM Servicios where cServicio='{codigo}'
@@ -341,14 +381,18 @@ def update_transport():
             UPDATE Transportes SET Tipo='{tipo}', FechaHora=TO_DATE('{fecha}', 'YYYY-MM-DD HH24:MI'), Compañia='{compania}', Origen='{origen}', Destino='{destino}' WHERE cServicio='{codigo}'
         """)
         db.execute("COMMIT")
-    
-    return redirect(url_for('transports'))
+
+    return redirect (url_for('transports'))
 
 @app.route('/accomodations')
 def accomodations():
+    db = get_db()
+    accomodations = db.execute(
+        """SELECT * FROM Alojamientos NATURAL JOIN (SELECT * FROM Servicios)"""
+    ).fetchall()
     return render_template('accomodations.html')
 
-@app.route('/insert_accomodations', methods=['GET', 'POST'])
+@app.route('/accomodations/insert', methods=['POST'])
 def insert_accomodations():
     db = get_db()
     if request.method == 'POST':
@@ -377,15 +421,12 @@ def insert_accomodations():
                 f"insert into Alojamientos values('{codigo}', '{nombre}', '{tipo}', TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), '{ubicacion}', '{telefono}')"
             )
             db.execute("commit")
-    
-    accomodations = db.execute(
-        """SELECT * FROM Alojamientos NATURAL JOIN (SELECT * FROM Servicios)"""
-    ).fetchall()
 
-    return render_template('insert_accomodations.html',accomodations=accomodations)
+    return redirect(url_for('accomodations.html'))
 
-@app.route('/accomodations/<int:id>/delete', methods=('POST',))
+@app.route('/accomodations/delete', methods=['POST'])
 def delete_accomodations():
+    db = get_db()
     
     codigo = request.form['code']
     error = None
@@ -399,22 +440,25 @@ def delete_accomodations():
         flash(error)
     
     else:
-        db = get_db()
+        db.execute(f"DELETE FROM Servicios WHERE cServicio = '{codigo}' ")
         db.execute(f"DELETE FROM Alojamientos WHERE cServicio = '{codigo}' ")
-        db.commit()
+        db.execute("COMMIT")
     
-    return render_template('delete')
+    redirect(url_for('accomodations.html'))
 
-@app.route('/accomodations/update', methods=('GET', 'POST'))
+@app.route('/accomodations/update', methods=['POST'])
 def update_accomodations():
+    db = get_db()    
     
     if request.method == 'POST':
         codigo = request.form['code']
+        nombre = request.form['name']
+        tipo = request.form['type']
+        ubicacion = request.form['location']
         fechaEntrada = request.form['entry date']
         fechaSalida = request.form['departure date']
         telefono = request.form['phone number']
         plazasTotales= request.form['total_seats']
-        plazasLibres = request.form['available_seats']
         precio = request.form['price']
         error = None
 
@@ -425,18 +469,15 @@ def update_accomodations():
 
         if error is not None:
             flash(error)
-        else:
-            db = get_db()
-            
-            db.execute(f"UPDATE Alojamientos SET FechaEntrada = TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), FechaSalida = TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), Telefono = '{telefono}' WHERE cServicio = '{codigo}'")
-
-            db.execute(f"UPDATE Servicios SET PlazasTotales = '{plazasTotales}', PlazasLibres = '{plazasLibres}', Precio = '{precio}' WHERE cServicio = '{codigo}'")
+        else:            
+            db.execute(f"UPDATE Servicios SET PlazasTotales = '{plazasTotales}', Precio = '{precio}' WHERE cServicio = '{codigo}'")  
+            db.execute(f"UPDATE Alojamientos SET Nombre = '{nombre}', Tipo = '{tipo}', Ubicacion = '{ubicacion}' FechaEntrada = TO_DATE('{fechaEntrada}', 'YYYY-MM-DD'), FechaSalida = TO_DATE('{fechaSalida}', 'YYYY-MM-DD'), Telefono = '{telefono}' WHERE cServicio = '{codigo}'")
             
             
-            db.commit()
+            db.execute("COMMIT")
             return redirect(url_for(''))
 
-    return render_template('blog/update.html')
+    redirect(url_for('accomodations.html'))
 
 @app.route('/bookings', methods=['GET', 'POST'])
 def bookings():
