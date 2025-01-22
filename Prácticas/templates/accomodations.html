@@ -36,7 +36,7 @@
 
     <div class="form-container">
         <h2>Alojamientos</h2>
-        <form method="post">
+        <form action="{{ url_for('insert_accomodations') }}" method="post">
             <label>Código:</label>
             <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
             <label>Nombre:</label>

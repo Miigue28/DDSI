@@ -34,7 +34,7 @@
     
     <div class="form-container">
         <h2>Actividades Turísticas</h2>
-        <form method="post">
+        <form action="{{ url_for('insert_activities') }}" method="post">
             <label>Código:</label>
             <input type="text" name="code" minlength="10" maxlength="10" value="{{ request.form['code'] }}" required>
             <label>Nombre:</label>
