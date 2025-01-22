@@ -235,7 +235,7 @@ def init_db():
             FOR EACH ROW
         BEGIN
             IF :new.PlazasLibres > :new.PlazasTotales THEN
-                raise_application_error(-20600, :new.PlazasLibres || :new.PlazasTotales || ' El sueldo no puede ser negativo');
+                raise_application_error(-20600, :new.PlazasLibres || :new.PlazasTotales || ' Las plazas libres no pueden superar las plazas disponibles');
             END IF;
         END;
     """)
