@@ -520,20 +520,21 @@ def bookings():
             price = db.execute(f"""
                 SELECT Precio FROM Servicios WHERE cServicio='{service}'
             """).fetchone()[0]
+            # Decrementamos el número de plazas libres del servicio
+            db.execute(f"""
+                UPDATE Servicios SET PlazasLibres=PlazasLibres-1 WHERE cServicio='{service}'       
+            """)
 
+            # Si ya existe la reserva, se amplia
             if db.execute(f"""
                 SELECT count(*) FROM Reservas where cReserva='{reservation}'
             """).fetchone()[0] > 0:
-                
-                # Decrementamos el número de plazas libres del servicio
-                db.execute(f"""
-                    UPDATE Servicios SET PlazasLibres=PlazasLibres-1 WHERE cServicio='{service}'       
-                """)
 
                 # Añadir el servicio a la reserva
                 db.execute(f"""
                 INSERT INTO Asociado VALUES ('{reservation}', '{service}')           
                 """)
+            # Si no existe la reserva, se crea
             else:
                 # Insertamos la reserva
                 db.execute(f"""
@@ -586,8 +587,17 @@ def delete_reservation():
         flash(error)
     else:
         if service != "":
+            # Incretamos el número de plazas libres del servicio
+            db.execute(f"""
+                UPDATE Servicios SET PlazasLibres=PlazasLibres+1 WHERE cServicio='{service}'       
+            """)
             db.execute(f"DELETE FROM Asociado WHERE cReserva='{reservation}' and cServicio='{service}'")
         else:
+            # Aumentamos las plazas libres de cada servicio asociado a la reserva
+            db.execute(f"""
+                UPDATE Servicios SET PlazasLibres=PlazasLibres+1 WHERE cServicio IN (SELECT cServicio FROM Asociado WHERE cReserva='{reservation}') 
+            """)
+            
             # Eliminamos primero los asociados a dicha reserva
             for i in range(db.execute(f"""
             SELECT count(*) FROM Asociado where cReserva='{reservation}'
