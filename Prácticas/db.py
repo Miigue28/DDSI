@@ -9,7 +9,7 @@ connection = None
 
 def get_db():
     if 'db' not in g:
-        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host="oracle0.ugr.es", port=1521, service_name="practbd")
+        cp = oracledb.ConnectParams(user=db_config.user, password=db_config.password, host=db_config.host, port=db_config.port, service_name=db_config.service_name)
         g.db = oracledb.connect(params=cp)
 
         click.echo('Conexión extablecida')

@@ -1,2 +1,5 @@
-user="x9047646"
-password="x9047646"
+user="xxxxxx"
+password="xxxxxx"
+host="xxxxxx"
+service_name="xxxxx"
+port=8080
